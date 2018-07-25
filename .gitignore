@@ -1,2 +1,6 @@
 *~
 *.swp
+
+demoApp/platforms/android/CordovaLib/build
+demoApp/platforms/android/.gradle
+demoApp/platforms/android/app/build
