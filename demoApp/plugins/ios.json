@@ -7,10 +7,10 @@
     "files": {}
   },
   "installed_plugins": {
-    "com.djpsoft.zap.plugin": {
+    "cordova-plugin-whitelist": {
       "PACKAGE_NAME": "com.djpsoft.zap.demoApp"
     },
-    "cordova-plugin-whitelist": {
+    "com.djpsoft.zap.plugin": {
       "PACKAGE_NAME": "com.djpsoft.zap.demoApp"
     }
   },

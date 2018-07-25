@@ -1,16 +1,16 @@
 {
-  "com.djpsoft.zap.plugin": {
-    "source": {
-      "type": "local",
-      "path": "C:\\Users\\DNewton\\projects\\cordova_zap\\demoApp\\node_modules\\com.djpsoft.zap.plugin"
-    },
-    "is_top_level": true,
-    "variables": {}
-  },
   "cordova-plugin-whitelist": {
     "source": {
       "type": "registry",
       "id": "cordova-plugin-whitelist@1"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "com.djpsoft.zap.plugin": {
+    "source": {
+      "type": "local",
+      "path": "C:\\Users\\DNewton\\projects\\cordova_zap\\demoApp\\node_modules\\com.djpsoft.zap.plugin"
     },
     "is_top_level": true,
     "variables": {}

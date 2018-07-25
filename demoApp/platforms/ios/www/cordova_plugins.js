@@ -12,8 +12,8 @@ module.exports = [
 module.exports.metadata = 
 // TOP OF METADATA
 {
-  "com.djpsoft.zap.plugin": "0.0.1",
-  "cordova-plugin-whitelist": "1.3.3"
+  "cordova-plugin-whitelist": "1.3.3",
+  "com.djpsoft.zap.plugin": "0.0.1"
 };
 // BOTTOM OF METADATA
 });
