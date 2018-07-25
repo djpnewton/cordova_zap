@@ -1,0 +1,19 @@
+{
+  "name": "com.djpsoft.zap.plugin",
+  "version": "0.0.1",
+  "description": "",
+  "cordova": {
+    "id": "com.djpsoft.zap.plugin",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "author": "Daniel Newton",
+  "license": "MIT"
+}

@@ -1,0 +1,18 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "com.djpsoft.zap.plugin": {
+      "PACKAGE_NAME": "com.djpsoft.zap.demoApp"
+    },
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "com.djpsoft.zap.demoApp"
+    }
+  },
+  "dependent_plugins": {}
+}
