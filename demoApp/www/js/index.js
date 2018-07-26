@@ -34,6 +34,9 @@ var app = {
         cordova.plugins.zap.version(function(res) {
             zapElement.innerHTML += "version: " + res + "<br/>";
         });
+        cordova.plugins.zap.seedToAddress("daniel", function(res) {
+            zapElement.innerHTML += "address: " + res + "<br/>";
+        });
         zapElement.innerHTML += "called libzap.<br/>";
     },
 

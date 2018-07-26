@@ -16,7 +16,7 @@
 		3047A5131AB8059700498E2A /* build-release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3047A5101AB8059700498E2A /* build-release.xcconfig */; };
 		3047A5141AB8059700498E2A /* build.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3047A5111AB8059700498E2A /* build.xcconfig */; };
 		6AFF5BF91D6E424B00AB3073 /* CDVLaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6AFF5BF81D6E424B00AB3073 /* CDVLaunchScreen.storyboard */; };
-		504BC945EECC4D0B85670004 /* zap.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EE0C775F2E41FDB1FE476A /* zap.m */; };
+		B37179225B324425889B5E86 /* zap.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BF55A8D707E474A9E65136C /* zap.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,7 +57,7 @@
 		EB87FDF41871DAF40020F90C /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = ../../config.xml; sourceTree = "<group>"; };
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = "HelloCordova/config.xml"; sourceTree = "<group>"; };
 		ED33DF2A687741AEAF9F8254 /* Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Bridging-Header.h"; path = "Bridging-Header.h"; sourceTree = "<group>"; };
-		47EE0C775F2E41FDB1FE476A /* zap.m */ = {isa = PBXFileReference; name = "zap.m"; path = "com.djpsoft.zap.plugin/zap.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		0BF55A8D707E474A9E65136C /* zap.m */ = {isa = PBXFileReference; name = "zap.m"; path = "com.djpsoft.zap.plugin/zap.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,7 +161,7 @@
 		307C750510C5A3420062BCA9 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
-				47EE0C775F2E41FDB1FE476A /* zap.m */,
+				0BF55A8D707E474A9E65136C /* zap.m */,
 			);
 			name = Plugins;
 			path = "HelloCordova/Plugins";
@@ -274,7 +274,7 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* AppDelegate.m in Sources */,
 				302D95F114D2391D003F00A1 /* MainViewController.m in Sources */,
-				504BC945EECC4D0B85670004 /* zap.m in Sources */,
+				B37179225B324425889B5E86 /* zap.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

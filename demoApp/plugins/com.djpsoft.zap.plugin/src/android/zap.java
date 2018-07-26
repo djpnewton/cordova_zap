@@ -14,30 +14,34 @@ import org.json.JSONObject;
  */
 public class zap extends CordovaPlugin {
     private static final String TAG = "libzap";
+    private static final char NETWORK_BYTE = 'T';
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        if (action.equals("coolMethod")) {
-            String message = args.getString(0);
-            this.coolMethod(message, callbackContext);
-            return true;
-        }
         if (action.equals("version")) {
             this.version(callbackContext);
+            return true;
+        }
+        if (action.equals("seedToAddress")) {
+            String key = args.getString(0);
+            this.seedToAddress(key, callbackContext);
+            return true;
         }
         return false;
-    }
-
-    private void coolMethod(String message, CallbackContext callbackContext) {
-        if (message != null && message.length() > 0) {
-            callbackContext.success(message);
-        } else {
-            callbackContext.error("Expected one non-empty string argument.");
-        }
     }
 
     private void version(CallbackContext callbackContext) {
         int version = zap_jni.version();
         callbackContext.success(version);
+    }
+
+    private void seedToAddress(String key, CallbackContext callbackContext) {
+        try {
+            String address = zap_jni.seed_to_address(key, this.NETWORK_BYTE);
+            callbackContext.success(address);
+        }
+        catch (Exception e) {
+            callbackContext.error(e.getMessage());
+        }
     }
 }
