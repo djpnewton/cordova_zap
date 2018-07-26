@@ -1,0 +1,3 @@
+[submodule "libzap"]
+	path = libzap
+	url = https://github.com/djpnewton/libzap.git
