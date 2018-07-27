@@ -18,4 +18,6 @@ public class zap_jni {
      */
     public static native int version();
     public static native String seed_to_address(String key, char network_byte);
+    public static native int test_curl();
+    public static native int test_jansson();
 }

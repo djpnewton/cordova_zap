@@ -27,6 +27,14 @@ public class zap extends CordovaPlugin {
             this.seedToAddress(key, callbackContext);
             return true;
         }
+        if (action.equals("testCurl")) {
+            this.testCurl(callbackContext);
+            return true;
+        }
+        if (action.equals("testJansson")) {
+            this.testJansson(callbackContext);
+            return true;
+        }
         return false;
     }
 
@@ -43,5 +51,15 @@ public class zap extends CordovaPlugin {
         catch (Exception e) {
             callbackContext.error(e.getMessage());
         }
+    }
+
+    private void testCurl(CallbackContext callbackContext) {
+        int res = zap_jni.test_curl();
+        callbackContext.success(res);
+    }
+
+    private void testJansson(CallbackContext callbackContext) {
+        int res = zap_jni.test_jansson();
+        callbackContext.success(res);
     }
 }

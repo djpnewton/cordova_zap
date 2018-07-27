@@ -37,6 +37,12 @@ var app = {
         cordova.plugins.zap.seedToAddress("daniel", function(res) {
             zapElement.innerHTML += "address: " + res + "<br/>";
         });
+        cordova.plugins.zap.testCurl(function(res) {
+            zapElement.innerHTML += "curl ok: " + res + "<br/>";
+        });
+        cordova.plugins.zap.testJansson(function(res) {
+            zapElement.innerHTML += "jansson ok: " + res + "<br/>";
+        });
         zapElement.innerHTML += "called libzap.<br/>";
     },
 
