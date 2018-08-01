@@ -10,6 +10,10 @@ exports.seedToAddress = function (arg0, success, error) {
     exec(success, error, PLUGIN_NAME, 'seedToAddress', [arg0]);
 };
 
+exports.addressBalance = function (arg0, success, error) {
+    exec(success, error, PLUGIN_NAME, 'addressBalance', [arg0]);
+};
+
 exports.testCurl = function (success, error) {
     exec(success, error, PLUGIN_NAME, 'testCurl', []);
 };

@@ -36,6 +36,12 @@ var app = {
         });
         cordova.plugins.zap.seedToAddress("daniel", function(res) {
             zapElement.innerHTML += "address: " + res + "<br/>";
+            cordova.plugins.zap.addressBalance(res, function(res) {
+                zapElement.innerHTML += "balance: " + res + "<br/>";
+            },
+            function(err) {
+                zapElement.innerHTML += "balance error: " + err + "<br/>";
+            });
         });
         cordova.plugins.zap.testCurl(function(res) {
             zapElement.innerHTML += "curl ok: " + res + "<br/>";

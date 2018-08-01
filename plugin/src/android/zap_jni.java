@@ -17,7 +17,9 @@ public class zap_jni {
      * with this application.
      */
     public static native int version();
-    public static native String seed_to_address(String key, char network_byte);
+    public static native void set_network(char network_byte);
+    public static native String seed_to_address(String key);
+    public static native IntResult address_balance(String address);
     public static native int test_curl();
     public static native int test_jansson();
 }
