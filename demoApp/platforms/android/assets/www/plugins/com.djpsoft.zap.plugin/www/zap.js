@@ -19,6 +19,10 @@ exports.mnemonicCreate = function (success, error) {
     exec(success, error, PLUGIN_NAME, 'mnemonicCreate', []);
 };
 
+exports.mnemonicCheck = function (arg0, success, error) {
+    exec(success, error, PLUGIN_NAME, 'mnemonicCheck', [arg0]);
+};
+
 exports.testCurl = function (success, error) {
     exec(success, error, PLUGIN_NAME, 'testCurl', []);
 };

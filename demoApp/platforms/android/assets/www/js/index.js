@@ -45,6 +45,12 @@ var app = {
         });
         cordova.plugins.zap.mnemonicCreate(function(res) {
             zapElement.innerHTML += "mnemonic: " + res + "<br/>";
+            cordova.plugins.zap.mnemonicCheck(res, function(res) {
+                zapElement.innerHTML += "mnemonic check: " + res + "<br/>";
+            },
+            function(err) {
+                zapElement.innerHTML += "mnemonic error: " + err + "<br/>";
+            });
         });
         cordova.plugins.zap.testCurl(function(res) {
             zapElement.innerHTML += "curl ok: " + res + "<br/>";

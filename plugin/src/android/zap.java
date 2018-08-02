@@ -41,6 +41,11 @@ public class zap extends CordovaPlugin {
             this.mnemonicCreate(callbackContext);
             return true;
         }
+        if (action.equals("mnemonicCheck")) {
+            String mnemonic = args.getString(0);
+            this.mnemonicCheck(mnemonic, callbackContext);
+            return true;
+        }
         if (action.equals("testCurl")) {
             this.testCurl(callbackContext);
             return true;
@@ -87,6 +92,16 @@ public class zap extends CordovaPlugin {
                 callbackContext.success(mnemonic);
             else
                 callbackContext.error("unable to create mnemonic");
+        }
+        catch (Exception e) {
+            callbackContext.error(e.getMessage());
+        }
+    }
+
+    private void mnemonicCheck(String mnemonic, CallbackContext callbackContext) {
+        try {
+            int result = zap_jni.mnemonic_check(mnemonic);
+            callbackContext.success(result);
         }
         catch (Exception e) {
             callbackContext.error(e.getMessage());
