@@ -14,6 +14,10 @@ exports.addressBalance = function (arg0, success, error) {
     exec(success, error, PLUGIN_NAME, 'addressBalance', [arg0]);
 };
 
+exports.mnemonicCreate = function (success, error) {
+    exec(success, error, PLUGIN_NAME, 'mnemonicCreate', []);
+};
+
 exports.testCurl = function (success, error) {
     exec(success, error, PLUGIN_NAME, 'testCurl', []);
 };

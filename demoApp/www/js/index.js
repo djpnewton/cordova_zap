@@ -43,6 +43,9 @@ var app = {
                 zapElement.innerHTML += "balance error: " + err + "<br/>";
             });
         });
+        cordova.plugins.zap.mnemonicCreate(function(res) {
+            zapElement.innerHTML += "mnemonic: " + res + "<br/>";
+        });
         cordova.plugins.zap.testCurl(function(res) {
             zapElement.innerHTML += "curl ok: " + res + "<br/>";
         });

@@ -37,6 +37,10 @@ public class zap extends CordovaPlugin {
             this.addressBalance(address, callbackContext);
             return true;
         }
+        if (action.equals("mnemonicCreate")) {
+            this.mnemonicCreate(callbackContext);
+            return true;
+        }
         if (action.equals("testCurl")) {
             this.testCurl(callbackContext);
             return true;
@@ -70,6 +74,19 @@ public class zap extends CordovaPlugin {
                 callbackContext.success(balance.getValue());
             else
                 callbackContext.error("unable to get balance");
+        }
+        catch (Exception e) {
+            callbackContext.error(e.getMessage());
+        }
+    }
+
+    private void mnemonicCreate(CallbackContext callbackContext) {
+        try {
+            String mnemonic = zap_jni.mnemonic_create();
+            if (mnemonic != null)
+                callbackContext.success(mnemonic);
+            else
+                callbackContext.error("unable to create mnemonic");
         }
         catch (Exception e) {
             callbackContext.error(e.getMessage());

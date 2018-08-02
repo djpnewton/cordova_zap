@@ -20,6 +20,7 @@ public class zap_jni {
     public static native void set_network(char network_byte);
     public static native String seed_to_address(String key);
     public static native IntResult address_balance(String address);
+    public static native String mnemonic_create();
     public static native int test_curl();
     public static native int test_jansson();
 }
