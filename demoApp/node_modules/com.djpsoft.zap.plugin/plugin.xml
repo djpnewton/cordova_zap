@@ -13,6 +13,7 @@
         <config-file parent="/*" target="AndroidManifest.xml" />
         <source-file src="src/android/zap.java" target-dir="src/com/djpsoft/zap/plugin" />
         <source-file src="src/android/IntResult.java" target-dir="src/com/djpsoft/zap/plugin" />
+        <source-file src="src/android/Tx.java" target-dir="src/com/djpsoft/zap/plugin" />
         <source-file src="src/android/zap_jni.java" target-dir="src/com/djpsoft/zap/plugin" />
         <source-file src="src/android/libs/armeabi-v7a/libzap.so" target-dir="libs/armeabi-v7a" />
     </platform>

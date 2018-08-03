@@ -13,18 +13,27 @@ import org.json.JSONObject;
  * This class echoes a string called from JavaScript.
  */
 public class zap extends CordovaPlugin {
-    private static final String TAG = "libzap";
+    private static final String TAG = "LIBZAPj";
     private static final char NETWORK_BYTE = 'T';
 
     public zap()
     {
-        zap_jni.set_network(NETWORK_BYTE);
+        zap_jni.network_set(NETWORK_BYTE);
     }
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equals("version")) {
             this.version(callbackContext);
+            return true;
+        }
+        if (action.equals("mnemonicCreate")) {
+            this.mnemonicCreate(callbackContext);
+            return true;
+        }
+        if (action.equals("mnemonicCheck")) {
+            String mnemonic = args.getString(0);
+            this.mnemonicCheck(mnemonic, callbackContext);
             return true;
         }
         if (action.equals("seedToAddress")) {
@@ -37,21 +46,10 @@ public class zap extends CordovaPlugin {
             this.addressBalance(address, callbackContext);
             return true;
         }
-        if (action.equals("mnemonicCreate")) {
-            this.mnemonicCreate(callbackContext);
-            return true;
-        }
-        if (action.equals("mnemonicCheck")) {
-            String mnemonic = args.getString(0);
-            this.mnemonicCheck(mnemonic, callbackContext);
-            return true;
-        }
-        if (action.equals("testCurl")) {
-            this.testCurl(callbackContext);
-            return true;
-        }
-        if (action.equals("testJansson")) {
-            this.testJansson(callbackContext);
+        if (action.equals("addressTransactions")) {
+            String address = args.getString(0);
+            int count = args.getInt(1);
+            this.addressTransactions(address, count, callbackContext);
             return true;
         }
         return false;
@@ -60,29 +58,6 @@ public class zap extends CordovaPlugin {
     private void version(CallbackContext callbackContext) {
         int version = zap_jni.version();
         callbackContext.success(version);
-    }
-
-    private void seedToAddress(String key, CallbackContext callbackContext) {
-        try {
-            String address = zap_jni.seed_to_address(key);
-            callbackContext.success(address);
-        }
-        catch (Exception e) {
-            callbackContext.error(e.getMessage());
-        }
-    }
-
-    private void addressBalance(String address, CallbackContext callbackContext) {
-        try {
-            IntResult balance = zap_jni.address_balance(address);
-            if (balance.getSuccess())
-                callbackContext.success(balance.getValue());
-            else
-                callbackContext.error("unable to get balance");
-        }
-        catch (Exception e) {
-            callbackContext.error(e.getMessage());
-        }
     }
 
     private void mnemonicCreate(CallbackContext callbackContext) {
@@ -108,13 +83,64 @@ public class zap extends CordovaPlugin {
         }
     }
 
-    private void testCurl(CallbackContext callbackContext) {
-        int res = zap_jni.test_curl();
-        callbackContext.success(res);
+    private void seedToAddress(String key, CallbackContext callbackContext) {
+        try {
+            String address = zap_jni.seed_to_address(key);
+            callbackContext.success(address);
+        }
+        catch (Exception e) {
+            callbackContext.error(e.getMessage());
+        }
     }
 
-    private void testJansson(CallbackContext callbackContext) {
-        int res = zap_jni.test_jansson();
-        callbackContext.success(res);
+    private void addressBalance(String address, CallbackContext callbackContext) {
+        try {
+            IntResult balance = zap_jni.address_balance(address);
+            if (balance.getSuccess())
+                callbackContext.success(balance.getValue());
+            else
+                callbackContext.error("unable to get balance");
+        }
+        catch (Exception e) {
+            callbackContext.error(e.getMessage());
+        }
+    }
+
+    private void addressTransactions(String address, int count, CallbackContext callbackContext) {
+        try {
+            // initialize txs with preallocated tx objects
+            Tx[] txs = new Tx[count];
+            for (int i = 0; i < count; i++)
+                txs[i] = new Tx();
+            // call into jni
+            Log.d(TAG, String.format("calling address_transactions with count: %d", count));
+            IntResult result = zap_jni.address_transactions(address, txs, count);
+            Log.d(TAG, String.format("address_transactions success: %b, count: %d", result.getSuccess(), result.getValue()));
+            if (result.getSuccess()) {
+                JSONArray jsonTxs = new JSONArray();
+                for (int i = 0; i < result.getValue(); i++) {
+                    JSONObject jsonTx = new JSONObject();
+                    jsonTx.put("id", txs[i].Id);
+                    jsonTx.put("sender", txs[i].Sender);
+                    jsonTx.put("recipient", txs[i].Recipient);
+                    jsonTx.put("asset_id", txs[i].AssetId);
+                    jsonTx.put("fee_asset", txs[i].FeeAsset);
+                    jsonTx.put("amount", txs[i].Amount);
+                    jsonTx.put("fee", txs[i].Fee);
+                    jsonTx.put("timestamp", txs[i].Timestamp);
+                    jsonTxs.put(jsonTx);
+                }
+                Log.d(TAG, String.format("jsonTxs length: %d", jsonTxs.length()));
+                callbackContext.success(jsonTxs);
+            }
+            else
+            {
+                Log.e(TAG, "addressTransactions failed");
+                callbackContext.error("unable to get result");
+            }
+        }
+        catch (Exception e) {
+            callbackContext.error(e.getMessage());
+        }
     }
 }

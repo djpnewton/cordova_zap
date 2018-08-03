@@ -17,12 +17,10 @@ public class zap_jni {
      * with this application.
      */
     public static native int version();
-    public static native void set_network(char network_byte);
-    public static native String seed_to_address(String key);
-    public static native IntResult address_balance(String address);
+    public static native void network_set(char network_byte);
     public static native String mnemonic_create();
     public static native int mnemonic_check(String mnemonic);
-
-    public static native int test_curl();
-    public static native int test_jansson();
+    public static native String seed_to_address(String key);
+    public static native IntResult address_balance(String address);
+    public static native IntResult address_transactions(String address, Tx[] txs, int count);
 }

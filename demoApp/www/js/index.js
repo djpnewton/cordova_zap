@@ -31,32 +31,43 @@ var app = {
 
         var zapElement = document.getElementById("zaplog");
         zapElement.innerHTML += "calling libzap...<br/>";
-        cordova.plugins.zap.version(function(res) {
-            zapElement.innerHTML += "version: " + res + "<br/>";
+        cordova.plugins.zap.version(function(version) {
+            zapElement.innerHTML += "version: " + version + "<br/>";
         });
-        cordova.plugins.zap.seedToAddress("daniel", function(res) {
-            zapElement.innerHTML += "address: " + res + "<br/>";
-            cordova.plugins.zap.addressBalance(res, function(res) {
-                zapElement.innerHTML += "balance: " + res + "<br/>";
-            },
-            function(err) {
-                zapElement.innerHTML += "balance error: " + err + "<br/>";
-            });
-        });
-        cordova.plugins.zap.mnemonicCreate(function(res) {
-            zapElement.innerHTML += "mnemonic: " + res + "<br/>";
-            cordova.plugins.zap.mnemonicCheck(res, function(res) {
-                zapElement.innerHTML += "mnemonic check: " + res + "<br/>";
+        cordova.plugins.zap.mnemonicCreate(function(mnemonic) {
+            zapElement.innerHTML += "mnemonic: " + mnemonic + "<br/>";
+            cordova.plugins.zap.mnemonicCheck(mnemonic, function(mnemonic_ok) {
+                zapElement.innerHTML += "mnemonic check: " + mnemonic_ok + "<br/>";
             },
             function(err) {
                 zapElement.innerHTML += "mnemonic error: " + err + "<br/>";
             });
         });
-        cordova.plugins.zap.testCurl(function(res) {
-            zapElement.innerHTML += "curl ok: " + res + "<br/>";
-        });
-        cordova.plugins.zap.testJansson(function(res) {
-            zapElement.innerHTML += "jansson ok: " + res + "<br/>";
+        cordova.plugins.zap.seedToAddress("daniel", function(address) {
+            zapElement.innerHTML += "address: " + address + "<br/>";
+            cordova.plugins.zap.addressBalance(address, function(balance) {
+                zapElement.innerHTML += "balance: " + balance + "<br/>";
+            },
+            function(err) {
+                zapElement.innerHTML += "balance error: " + err + "<br/>";
+            });
+            cordova.plugins.zap.addressTransactions(address, 10, function(txs) {
+                zapElement.innerHTML += "transactions: " + txs.length + "<br/>";
+                for (var i = 0; i < txs.length; i++) {
+                    zapElement.innerHTML += "    id: " + txs[i].id + "<br/>";
+                    zapElement.innerHTML += "    sender: " + txs[i].sender + "<br/>";
+                    zapElement.innerHTML += "    recipient: " + txs[i].recipient + "<br/>";
+                    zapElement.innerHTML += "    asset_id: " + txs[i].asset_id + "<br/>";
+                    zapElement.innerHTML += "    fee_asset: " + txs[i].fee_asset + "<br/>";
+                    zapElement.innerHTML += "    attachment: " + txs[i].attachment + "<br/>";
+                    zapElement.innerHTML += "    amount: " + txs[i].amount + "<br/>";
+                    zapElement.innerHTML += "    fee: " + txs[i].fee + "<br/>";
+                    zapElement.innerHTML += "    timestamp: " + txs[i].timestamp + "<br/>";
+                }
+            },
+            function(err) {
+                zapElement.innerHTML += "transactions error: " + err + "<br/>";
+            });
         });
         zapElement.innerHTML += "called libzap.<br/>";
     },
