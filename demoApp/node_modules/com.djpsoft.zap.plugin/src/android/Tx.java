@@ -8,9 +8,9 @@ public final class Tx {
     public String AssetId;
     public String FeeAsset;
     public String Attachment;
-    public int Amount;
-    public int Fee;
-    public int Timestamp;
+    public long Amount;
+    public long Fee;
+    public long Timestamp;
 
     public Tx() {
     }

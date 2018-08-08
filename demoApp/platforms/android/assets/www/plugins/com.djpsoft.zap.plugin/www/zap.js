@@ -21,10 +21,18 @@ exports.seedToAddress = function (arg0, success, error) {
 
 exports.addressBalance = function (arg0, success, error) {
     exec(success, error, PLUGIN_NAME, 'addressBalance', [arg0]);
-}
+};
 
 exports.addressTransactions = function (arg0, arg1, success, error) {
     exec(success, error, PLUGIN_NAME, 'addressTransactions', [arg0, arg1]);
+};
+
+exports.transactionCreate = function (arg0, arg1, arg2, arg3, success, error) {
+    exec(success, error, PLUGIN_NAME, 'transactionCreate', [arg0, arg1, arg2, arg3]);
+};
+
+exports.transactionBroadcast = function (arg0, arg1, success, error) {
+    exec(success, error, PLUGIN_NAME, 'transactionBroadcast', [arg0, arg1]);
 };
 
 });
