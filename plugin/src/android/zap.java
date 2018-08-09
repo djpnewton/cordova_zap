@@ -1,6 +1,7 @@
 package com.djpsoft.zap.plugin;
 
 import android.util.Log;
+import android.util.Base64;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -61,9 +62,8 @@ public class zap extends CordovaPlugin {
             return true;
         }
         if (action.equals("transactionBroadcast")) {
-            String txdata = args.getString(0);
-            String signature = args.getString(1);
-            this.transactionBroadcast(txdata, signature, callbackContext);
+            JSONObject spendTx = args.getJSONObject(0);
+            this.transactionBroadcast(spendTx, callbackContext);
             return true;
         }
         return false;
@@ -134,8 +134,6 @@ public class zap extends CordovaPlugin {
             // call into jni
             Log.d(TAG, String.format("calling address_transactions with count: %d", count));
             IntResult result = zap_jni.address_transactions(address, txs, count);
-            //TODO: why are longs not shown properly!!
-            Log.d(TAG, String.format("address_transactions success: %b, count: %d", result.Success, (int)result.Value));
             if (result.Success) {
                 JSONArray jsonTxs = new JSONArray();
                 //TODO: why are longs not shown properly!!
@@ -171,11 +169,10 @@ public class zap extends CordovaPlugin {
             // call into jni
             Log.d(TAG, String.format("calling transaction_create with recipient: %s, amount: %d, attachment: %s", recipient, amount, attachment));
             SpendTx result = zap_jni.transaction_create(seed, recipient, amount, attachment);
-            Log.d(TAG, String.format("transaction_create success: %b", result.Success));
             if (result.Success) {
                 JSONObject spendTxJson = new JSONObject();
-                spendTxJson.put("txdata", result.TxData);
-                spendTxJson.put("signature", result.Signature);
+                spendTxJson.put("txdata", Base64.encodeToString(result.TxData, Base64.DEFAULT));
+                spendTxJson.put("signature", Base64.encodeToString(result.Signature, Base64.DEFAULT));
                 callbackContext.success(spendTxJson);
             }
             else
@@ -190,11 +187,16 @@ public class zap extends CordovaPlugin {
         }
     }
 
-    private void transactionBroadcast(String txdata, String signature, CallbackContext callbackContext) {
+    private void transactionBroadcast(JSONObject spendTx, CallbackContext callbackContext) {
         try {
             // call into jni
-            Log.d(TAG, String.format("calling transaction_broadcast"));
-            int result = zap_jni.transaction_broadcast(txdata, signature);
+            String txdata = spendTx.getString("txdata");
+            String signature = spendTx.getString("signature");
+            SpendTx spendTxJ = new SpendTx(false,
+                    Base64.decode(txdata, Base64.DEFAULT),
+                    Base64.decode(signature, Base64.DEFAULT));
+            Log.d(TAG, String.format("calling transaction_broadcast txdata %s, signature %s", txdata, signature));
+            int result = zap_jni.transaction_broadcast(spendTxJ);
             callbackContext.success(result);
         }
         catch (Exception e) {

@@ -32,6 +32,11 @@ var app = {
         ele.innerHTML += "<div class='zapsubsection'>" + str + "</div>";
     },
 
+    hideSpinner: function() {
+        var ele = document.getElementById("spinner");
+        ele.setAttribute('style', 'display:none;');
+    },
+
     // deviceready Event Handler
     //
     // Bind any cordova events here. Common events are:
@@ -75,10 +80,12 @@ var app = {
                     str += "fee: " + txs[i].fee + "<br/>";
                     str += "timestamp: " + txs[i].timestamp + "<br/>";
                     self.addSubSection(str, "txs");
+                    self.hideSpinner();
                 }
             },
             function(err) {
                 self.addSection("transactions error: " + err);
+                self.hideSpinner();
             });
         });
         self.addSection("called libzap.");
@@ -89,13 +96,13 @@ var app = {
             var amount = parseInt(document.getElementById("amount").value);
             var attachment = document.getElementById("attachment").value;
             cordova.plugins.zap.transactionCreate(seed, address, amount, attachment, function(spendTx) {
-                self.addSection("created tx: " + spendTx);
-                //cordova.plugins.zap.transactionBroadcast(spendTx.txdata, spendTx.signature, function(result) {
-                //    self.addSection("broadcast: " + result);
-                //},
-                //function(err) {
-                //    self.addSection("broadcast tx: " + err);
-                //});
+                self.addSection("created tx: " + spendTx.txdata + " - " + spendTx.signature);
+                cordova.plugins.zap.transactionBroadcast(spendTx, function(result) {
+                    self.addSection("broadcast: " + result);
+                },
+                function(err) {
+                    self.addSection("broadcast tx: " + err);
+                });
             },
             function(err) {
                 self.addSection("create tx: " + err);
