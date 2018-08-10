@@ -37,9 +37,9 @@ public class zap extends CordovaPlugin {
             this.mnemonicCheck(mnemonic, callbackContext);
             return true;
         }
-        if (action.equals("seedToAddress")) {
-            String key = args.getString(0);
-            this.seedToAddress(key, callbackContext);
+        if (action.equals("seedAddress")) {
+            String seed = args.getString(0);
+            this.seedAddress(seed, callbackContext);
             return true;
         }
         if (action.equals("addressBalance")) {
@@ -53,12 +53,17 @@ public class zap extends CordovaPlugin {
             this.addressTransactions(address, count, callbackContext);
             return true;
         }
+        if (action.equals("transactionFee")) {
+            this.transactionFee(callbackContext);
+            return true;
+        }
         if (action.equals("transactionCreate")) {
             String seed = args.getString(0);
             String recipient = args.getString(1);
             long amount = args.getLong(2);
-            String attachment = args.getString(3);
-            this.transactionCreate(seed, recipient, amount, attachment, callbackContext);
+            long fee = args.getLong(3);
+            String attachment = args.getString(4);
+            this.transactionCreate(seed, recipient, amount, fee, attachment, callbackContext);
             return true;
         }
         if (action.equals("transactionBroadcast")) {
@@ -99,9 +104,9 @@ public class zap extends CordovaPlugin {
         }
     }
 
-    private void seedToAddress(String key, CallbackContext callbackContext) {
+    private void seedAddress(String seed, CallbackContext callbackContext) {
         try {
-            String address = zap_jni.seed_to_address(key);
+            String address = zap_jni.seed_address(seed);
             callbackContext.success(address);
         }
         catch (Exception e) {
@@ -136,7 +141,6 @@ public class zap extends CordovaPlugin {
             IntResult result = zap_jni.address_transactions(address, txs, count);
             if (result.Success) {
                 JSONArray jsonTxs = new JSONArray();
-                //TODO: why are longs not shown properly!!
                 for (int i = 0; i < (int)result.Value; i++) {
                     JSONObject jsonTx = new JSONObject();
                     jsonTx.put("id", txs[i].Id);
@@ -164,14 +168,35 @@ public class zap extends CordovaPlugin {
         }
     }
 
-    private void transactionCreate(String seed, String recipient, long amount, String attachment, CallbackContext callbackContext) {
+    private void transactionFee(CallbackContext callbackContext) {
         try {
             // call into jni
-            Log.d(TAG, String.format("calling transaction_create with recipient: %s, amount: %d, attachment: %s", recipient, amount, attachment));
-            SpendTx result = zap_jni.transaction_create(seed, recipient, amount, attachment);
+            Log.d(TAG, String.format("calling transaction_fee"));
+            IntResult result = zap_jni.transaction_fee();
+            if (result.Success) {
+                //TODO: how to return long ints :(
+                callbackContext.success((int)result.Value);
+            }
+            else
+            {
+                Log.e(TAG, "transactionFee failed");
+                callbackContext.error("unable to get result");
+            }
+        }
+        catch (Exception e) {
+            Log.e(TAG, "exception", e);
+            callbackContext.error(e.getMessage());
+        }
+    }
+
+    private void transactionCreate(String seed, String recipient, long amount, long fee, String attachment, CallbackContext callbackContext) {
+        try {
+            // call into jni
+            Log.d(TAG, String.format("calling transaction_create with recipient: %s, amount: %d, fee: %d, attachment: %s", recipient, amount, fee, attachment));
+            SpendTx result = zap_jni.transaction_create(seed, recipient, amount, fee, attachment);
             if (result.Success) {
                 JSONObject spendTxJson = new JSONObject();
-                spendTxJson.put("txdata", Base64.encodeToString(result.TxData, Base64.DEFAULT));
+                spendTxJson.put("data", Base64.encodeToString(result.Data, Base64.DEFAULT));
                 spendTxJson.put("signature", Base64.encodeToString(result.Signature, Base64.DEFAULT));
                 callbackContext.success(spendTxJson);
             }
@@ -190,12 +215,12 @@ public class zap extends CordovaPlugin {
     private void transactionBroadcast(JSONObject spendTx, CallbackContext callbackContext) {
         try {
             // call into jni
-            String txdata = spendTx.getString("txdata");
+            String data = spendTx.getString("data");
             String signature = spendTx.getString("signature");
             SpendTx spendTxJ = new SpendTx(false,
-                    Base64.decode(txdata, Base64.DEFAULT),
+                    Base64.decode(data, Base64.DEFAULT),
                     Base64.decode(signature, Base64.DEFAULT));
-            Log.d(TAG, String.format("calling transaction_broadcast txdata %s, signature %s", txdata, signature));
+            Log.d(TAG, String.format("calling transaction_broadcast data %s, signature %s", data, signature));
             int result = zap_jni.transaction_broadcast(spendTxJ);
             callbackContext.success(result);
         }

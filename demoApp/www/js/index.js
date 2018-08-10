@@ -59,7 +59,7 @@ var app = {
                 self.addSection("mnemonic error: " + err);
             });
         });
-        cordova.plugins.zap.seedToAddress("daniel", function(address) {
+        cordova.plugins.zap.seedAddress("daniel", function(address) {
             self.addSection("address: " + address);
             cordova.plugins.zap.addressBalance(address, function(balance) {
                 self.addSection("balance: " + balance);
@@ -95,18 +95,23 @@ var app = {
             var address = document.getElementById("address").value;
             var amount = parseInt(document.getElementById("amount").value);
             var attachment = document.getElementById("attachment").value;
-            cordova.plugins.zap.transactionCreate(seed, address, amount, attachment, function(spendTx) {
-                self.addSection("created tx: " + spendTx.txdata + " - " + spendTx.signature);
-                cordova.plugins.zap.transactionBroadcast(spendTx, function(result) {
-                    self.addSection("broadcast: " + result);
+            cordova.plugins.zap.transactionFee(function(fee) {
+                cordova.plugins.zap.transactionCreate(seed, address, amount, fee, attachment, function(tx) {
+                    self.addSection("created tx: " + tx.data + " - " + tx.signature);
+                    cordova.plugins.zap.transactionBroadcast(tx, function(result) {
+                        self.addSection("broadcast: " + result);
+                    },
+                    function(err) {
+                        self.addSection("broadcast tx: " + err);
+                    });
                 },
                 function(err) {
-                    self.addSection("broadcast tx: " + err);
+                    self.addSection("create tx: " + err);
                 });
             },
             function(err) {
-                self.addSection("create tx: " + err);
-            })
+                self.addSection("fee: " + err);
+            });
         };
     },
 

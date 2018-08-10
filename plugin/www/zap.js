@@ -10,26 +10,30 @@ exports.mnemonicCreate = function (success, error) {
     exec(success, error, PLUGIN_NAME, 'mnemonicCreate', []);
 };
 
-exports.mnemonicCheck = function (arg0, success, error) {
-    exec(success, error, PLUGIN_NAME, 'mnemonicCheck', [arg0]);
+exports.mnemonicCheck = function (mnemonic, success, error) {
+    exec(success, error, PLUGIN_NAME, 'mnemonicCheck', [mnemonic]);
 };
 
-exports.seedToAddress = function (arg0, success, error) {
-    exec(success, error, PLUGIN_NAME, 'seedToAddress', [arg0]);
+exports.seedAddress = function (seed, success, error) {
+    exec(success, error, PLUGIN_NAME, 'seedAddress', [seed]);
 };
 
-exports.addressBalance = function (arg0, success, error) {
-    exec(success, error, PLUGIN_NAME, 'addressBalance', [arg0]);
+exports.addressBalance = function (address, success, error) {
+    exec(success, error, PLUGIN_NAME, 'addressBalance', [address]);
 };
 
-exports.addressTransactions = function (arg0, arg1, success, error) {
-    exec(success, error, PLUGIN_NAME, 'addressTransactions', [arg0, arg1]);
+exports.addressTransactions = function (address, limit, success, error) {
+    exec(success, error, PLUGIN_NAME, 'addressTransactions', [address, limit]);
 };
 
-exports.transactionCreate = function (arg0, arg1, arg2, arg3, success, error) {
-    exec(success, error, PLUGIN_NAME, 'transactionCreate', [arg0, arg1, arg2, arg3]);
+exports.transactionFee = function (success, error) {
+    exec(success, null, PLUGIN_NAME, 'transactionFee', []);
 };
 
-exports.transactionBroadcast = function (arg0, success, error) {
-    exec(success, error, PLUGIN_NAME, 'transactionBroadcast', [arg0]);
+exports.transactionCreate = function (seed, recipient, amount, fee, attachment, success, error) {
+    exec(success, error, PLUGIN_NAME, 'transactionCreate', [seed, recipient, amount, fee, attachment]);
+};
+
+exports.transactionBroadcast = function (tx, success, error) {
+    exec(success, error, PLUGIN_NAME, 'transactionBroadcast', [tx]);
 };
