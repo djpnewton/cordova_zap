@@ -70,15 +70,7 @@ var app = {
             cordova.plugins.zap.addressTransactions(address, 10, function(txs) {
                 self.addSection("<div id='txs'>transactions: " + txs.length + "</div>");
                 for (var i = 0; i < txs.length; i++) {
-                    var str = "id: " + txs[i].id + "<br/>";
-                    str += "sender: " + txs[i].sender + "<br/>";
-                    str += "recipient: " + txs[i].recipient + "<br/>";
-                    str += "asset_id: " + txs[i].asset_id + "<br/>";
-                    str += "fee_asset: " + txs[i].fee_asset + "<br/>";
-                    str += "attachment: " + txs[i].attachment + "<br/>";
-                    str += "amount: " + txs[i].amount + "<br/>";
-                    str += "fee: " + txs[i].fee + "<br/>";
-                    str += "timestamp: " + txs[i].timestamp + "<br/>";
+                    var str = "<pre>" + JSON.stringify(txs[i], null, 2) + "</pre>";
                     self.addSubSection(str, "txs");
                     self.hideSpinner();
                 }
@@ -99,7 +91,8 @@ var app = {
                 cordova.plugins.zap.transactionCreate(seed, address, amount, fee, attachment, function(tx) {
                     self.addSection("created tx: " + tx.data + " - " + tx.signature);
                     cordova.plugins.zap.transactionBroadcast(tx, function(result) {
-                        self.addSection("broadcast: " + result);
+                        var str = "broadcast tx: <pre>" + JSON.stringify(result, null, 2) + "</pre>";
+                        self.addSection(str);
                     },
                     function(err) {
                         self.addSection("broadcast tx: " + err);

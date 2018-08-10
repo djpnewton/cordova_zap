@@ -129,6 +129,17 @@ public class zap extends CordovaPlugin {
             callbackContext.error(e.getMessage());
         }
     }
+    
+    private void populateJsonTx(JSONObject jsonTx, Tx tx) throws JSONException {
+        jsonTx.put("id", tx.Id);
+        jsonTx.put("sender", tx.Sender);
+        jsonTx.put("recipient", tx.Recipient);
+        jsonTx.put("asset_id", tx.AssetId);
+        jsonTx.put("fee_asset", tx.FeeAsset);
+        jsonTx.put("amount", tx.Amount);
+        jsonTx.put("fee", tx.Fee);
+        jsonTx.put("timestamp", tx.Timestamp);
+    }
 
     private void addressTransactions(String address, int count, CallbackContext callbackContext) {
         try {
@@ -143,14 +154,7 @@ public class zap extends CordovaPlugin {
                 JSONArray jsonTxs = new JSONArray();
                 for (int i = 0; i < (int)result.Value; i++) {
                     JSONObject jsonTx = new JSONObject();
-                    jsonTx.put("id", txs[i].Id);
-                    jsonTx.put("sender", txs[i].Sender);
-                    jsonTx.put("recipient", txs[i].Recipient);
-                    jsonTx.put("asset_id", txs[i].AssetId);
-                    jsonTx.put("fee_asset", txs[i].FeeAsset);
-                    jsonTx.put("amount", txs[i].Amount);
-                    jsonTx.put("fee", txs[i].Fee);
-                    jsonTx.put("timestamp", txs[i].Timestamp);
+                    populateJsonTx(jsonTx, txs[i]);
                     jsonTxs.put(jsonTx);
                 }
                 Log.d(TAG, String.format("jsonTxs length: %d", jsonTxs.length()));
@@ -220,9 +224,16 @@ public class zap extends CordovaPlugin {
             SpendTx spendTxJ = new SpendTx(false,
                     Base64.decode(data, Base64.DEFAULT),
                     Base64.decode(signature, Base64.DEFAULT));
+            Tx txJ = new Tx();
             Log.d(TAG, String.format("calling transaction_broadcast data %s, signature %s", data, signature));
-            int result = zap_jni.transaction_broadcast(spendTxJ);
-            callbackContext.success(result);
+            int result = zap_jni.transaction_broadcast(spendTxJ, txJ);
+            if (result != 0) {
+                JSONObject jsonTx = new JSONObject();
+                populateJsonTx(jsonTx, txJ);
+                callbackContext.success(jsonTx);
+            }
+            else
+                callbackContext.error("failed to broadcast tx");
         }
         catch (Exception e) {
             Log.e(TAG, "exception", e);
