@@ -2,6 +2,8 @@
 
 #import <Cordova/CDV.h>
 
+#import "../../../libzap/src/zap.h"
+
 @interface zap : CDVPlugin {
   // Member variables go here.
 }
@@ -21,6 +23,16 @@
     } else {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     }
+
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)version:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+
+    int version = lzap_version();
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:version];
 
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }

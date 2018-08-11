@@ -37,10 +37,35 @@
     </head>
     <body>
         <div class="app">
-            <h1>Apache Cordova</h1>
             <div id="deviceready" class="blink">
                 <p class="event listening">Connecting to Device</p>
                 <p class="event received">Device is Ready</p>
+                <img id="spinner" class="center" src="img/Pacman-1s-200px.gif">
+            </div>
+            <div id="zaplog">
+                Zaplog
+            </div>
+            <div class="zapsection">
+                Send form:</br>
+                <div class="zapsubsection">
+                    seed: </br>
+                    <input id="seed" value="daniel"/>
+                </div>
+                <div class="zapsubsection">
+                    address: </br>
+                    <input id="address" value="3MpkEPnU3KkDYkFGwivUn2psMQo74MX4fyJ"/>
+                </div>
+                <div class="zapsubsection">
+                    amount: </br>
+                    <input id="amount" type="number" value="100"/>
+                </div>
+                <div class="zapsubsection">
+                    attachment: </br>
+                    <input id="attachment"/>
+                </div>
+                <button id="sendbtn">
+                    send
+                </button>
             </div>
         </div>
         <script type="text/javascript" src="cordova.js"></script>

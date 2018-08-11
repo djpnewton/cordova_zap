@@ -23,7 +23,11 @@
             <feature name="zap">
                 <param name="ios-package" value="zap" />
             </feature>
-            </config-file>
-            <source-file src="src/ios/zap.m" />
+        </config-file>
+        <source-file src="src/ios/zap.m" />
+        <!--
+        <source-file src="src/ios/libs/libzap.a" framework="true" />
+        -->
+        <source-file src="src/ios/libs/libzap.dylib" target-dir="libs" />
     </platform>
 </plugin>
