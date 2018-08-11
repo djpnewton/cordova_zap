@@ -2,7 +2,7 @@
 
 #import <Cordova/CDV.h>
 
-#import "../../../libzap/src/zap.h"
+#import "zap.h"
 
 @interface zap : CDVPlugin {
   // Member variables go here.

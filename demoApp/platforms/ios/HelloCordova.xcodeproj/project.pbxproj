@@ -16,7 +16,8 @@
 		3047A5131AB8059700498E2A /* build-release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3047A5101AB8059700498E2A /* build-release.xcconfig */; };
 		3047A5141AB8059700498E2A /* build.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3047A5111AB8059700498E2A /* build.xcconfig */; };
 		6AFF5BF91D6E424B00AB3073 /* CDVLaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6AFF5BF81D6E424B00AB3073 /* CDVLaunchScreen.storyboard */; };
-		C7498DB5B89648B79CB3E9D0 /* zap.m in Sources */ = {isa = PBXBuildFile; fileRef = 270CDDEE9A1A4EACA339084B /* zap.m */; };
+		81A433A5A7B34447A59FF5A6 /* zap.m in Sources */ = {isa = PBXBuildFile; fileRef = CD25D0CF2060492082B082CB /* zap.m */; };
+		E8202D06908D4D329E4979FE /* libzap_combined.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DD54FF2EA0B46839666172E /* libzap_combined.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,7 +58,8 @@
 		EB87FDF41871DAF40020F90C /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = ../../config.xml; sourceTree = "<group>"; };
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = "HelloCordova/config.xml"; sourceTree = "<group>"; };
 		ED33DF2A687741AEAF9F8254 /* Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Bridging-Header.h"; path = "Bridging-Header.h"; sourceTree = "<group>"; };
-		270CDDEE9A1A4EACA339084B /* zap.m */ = {isa = PBXFileReference; name = "zap.m"; path = "../../../../../plugin/src/ios/zap.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		CD25D0CF2060492082B082CB /* zap.m */ = {isa = PBXFileReference; name = "zap.m"; path = "../../../../../plugin/src/ios/zap.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		8DD54FF2EA0B46839666172E /* libzap_combined.a */ = {isa = PBXFileReference; name = "libzap_combined.a"; path = "../../../plugin/src/ios/libs/libzap_combined.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				301BF552109A68D80062928A /* libCordova.a in Frameworks */,
+				E8202D06908D4D329E4979FE /* libzap_combined.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,6 +139,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8DD54FF2EA0B46839666172E /* libzap_combined.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -161,7 +165,7 @@
 		307C750510C5A3420062BCA9 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
-				270CDDEE9A1A4EACA339084B /* zap.m */,
+				CD25D0CF2060492082B082CB /* zap.m */,
 			);
 			name = Plugins;
 			path = "HelloCordova/Plugins";
@@ -274,7 +278,7 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* AppDelegate.m in Sources */,
 				302D95F114D2391D003F00A1 /* MainViewController.m in Sources */,
-				C7498DB5B89648B79CB3E9D0 /* zap.m in Sources */,
+				81A433A5A7B34447A59FF5A6 /* zap.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,6 +314,10 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				PRODUCT_NAME = "HelloCordova";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/HelloCordova/Plugins/../../../../../plugin/src/ios/libs\"",
+				);
 			};
 			name = Debug;
 		};
@@ -332,6 +340,10 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				PRODUCT_NAME = "HelloCordova";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/HelloCordova/Plugins/../../../../../plugin/src/ios/libs\"",
+				);
 			};
 			name = Release;
 		};

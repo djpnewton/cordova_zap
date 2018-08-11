@@ -40,14 +40,20 @@ if [ "$build_type" == "android" ]; then
     (cd demoApp; cordova run android)
 elif [ "$build_type" == "ios" ]; then
     # do ios stuff
-    echo :: build libzap.dylib
-    (cd libzap/src; ./build_ios_makefiles.sh; make)
+    echo :: build libzap.a
+    (cd libzap/src; ./build_ios_makefiles.sh; make;)
 
-    echo :: copy libzap.dylib to cordova plugin
-    cp libzap/src/xcode_build/libzap.dylib plugin/src/ios/libs/libzap.dylib
+    echo :: combine libs
+    (cd libzap/src; ./combine_ios_libs.sh;)
+
+    echo :: copy libzap_combined.a to cordova plugin
+    cp libzap/src/libzap_combined.a plugin/src/ios/libs/libzap_combined.a
+
+    echo :: copy zap.h to cordova plugin
+    cp libzap/src/zap.h plugin/src/ios/zap.h
 
     echo :: run ios cordova app
-    (cd demoApp; cordova run ios)
+    (cd demoApp; cordova run ios --device)
 else
     echo no build type specified! - 'android' or 'ios'?
 fi

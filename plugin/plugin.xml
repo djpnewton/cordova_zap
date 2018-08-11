@@ -25,9 +25,6 @@
             </feature>
         </config-file>
         <source-file src="src/ios/zap.m" />
-        <!--
-        <source-file src="src/ios/libs/libzap.a" framework="true" />
-        -->
-        <source-file src="src/ios/libs/libzap.dylib" target-dir="libs" />
+        <source-file src="src/ios/libs/libzap_combined.a" framework="true" />
     </platform>
 </plugin>
