@@ -2,6 +2,10 @@
 
 set -e
 
+# get command line params
+build_type=$1
+sim=$2
+
 # get machine type (linix or mac generally)
 unameOut="$(uname -s)"
 case "${unameOut}" in
@@ -12,9 +16,6 @@ case "${unameOut}" in
     *)          machine="UNKNOWN:${unameOut}"
 esac
 echo $machine
-
-# get build type from command line param
-build_type=$1
 
 if [ "$build_type" == "android" ]; then
     # do android stuff
@@ -41,10 +42,10 @@ if [ "$build_type" == "android" ]; then
 elif [ "$build_type" == "ios" ]; then
     # do ios stuff
     echo :: build libzap.a
-    (cd libzap/src; ./build_ios_makefiles.sh; make;)
+    (cd libzap/src; ./build_ios_makefiles.sh $sim; make;)
 
     echo :: combine libs
-    (cd libzap/src; ./combine_ios_libs.sh;)
+    (cd libzap/src; ./combine_ios_libs.sh $sim;)
 
     echo :: copy libzap_combined.a to cordova plugin
     cp libzap/src/libzap_combined.a plugin/src/ios/libs/libzap_combined.a
@@ -53,7 +54,11 @@ elif [ "$build_type" == "ios" ]; then
     cp libzap/src/zap.h plugin/src/ios/zap.h
 
     echo :: run ios cordova app
-    (cd demoApp; cordova run ios --device)
+    if [ "$sim" == "sim" ]; then
+        (cd demoApp; cordova run ios)
+    else
+        (cd demoApp; cordova run ios --device)
+    fi
 else
     echo no build type specified! - 'android' or 'ios'?
 fi
