@@ -28,10 +28,10 @@ if [ "$build_type" == "android" ]; then
     fi
 
     echo :: build libzap.so
-    (cd libzap/src; ./build_android_makefiles.sh; make)
+    (cd libzap/builds; ./cmake_lib_android.sh; cd android; make)
 
     echo :: copy libzap.so to cordova plugin
-    cp libzap/src/ndk_build/armeabi-v7a/libzap.so plugin/src/android/libs/armeabi-v7a/libzap.so
+    cp libzap/builds/ndk_build/armeabi-v7a/libzap.so plugin/src/android/libs/armeabi-v7a/libzap.so
 
     echo :: copy libzap java files to cordova plugin
     cp libzap/src/*.java plugin/src/android/
@@ -42,13 +42,13 @@ if [ "$build_type" == "android" ]; then
 elif [ "$build_type" == "ios" ]; then
     # do ios stuff
     echo :: build libzap.a
-    (cd libzap/src; ./build_ios_makefiles.sh $sim; make;)
+    (cd libzap/builds; ./cmake_lib_ios.sh $sim; cd ios; make;)
 
     echo :: combine libs
-    (cd libzap/src; ./combine_ios_libs.sh $sim;)
+    (cd libzap/builds; ./combine_ios_libs.sh $sim;)
 
     echo :: copy libzap_combined.a to cordova plugin
-    cp libzap/src/libzap_combined.a plugin/src/ios/libs/libzap_combined.a
+    cp libzap/builds/xcode_build/libzap_combined.a plugin/src/ios/libs/libzap_combined.a
 
     echo :: copy zap.h to cordova plugin
     cp libzap/src/zap.h plugin/src/ios/zap.h
