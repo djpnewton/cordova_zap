@@ -8,7 +8,12 @@
   // Member variables go here.
 }
 
-- (void)coolMethod:(CDVInvokedUrlCommand*)command;
+- (void)version:(CDVInvokedUrlCommand*)command;
+- (void)mnemonicCreate:(CDVInvokedUrlCommand*)command;
+- (void)mnemonicCheck:(CDVInvokedUrlCommand*)command;
+- (void)seedAddress:(CDVInvokedUrlCommand*)command;
+- (void)addressBalance:(CDVInvokedUrlCommand*)command;
+- (void)addressTransactions:(CDVInvokedUrlCommand*)command;
 @end
 
 @implementation zap
@@ -84,9 +89,53 @@
         const char *c_address = [address cStringUsingEncoding:NSUTF8StringEncoding];
         struct int_result_t result = lzap_address_balance(c_address);
         if (result.success)
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:result.value];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:result.value];
         else
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+    }
+
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)addressTransactions:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+
+    NSString *address = [command.arguments objectAtIndex:0];
+    NSNumber *limit = [command.arguments objectAtIndex:1];
+
+    if (address != nil && [address length] > 0) {
+        const char *c_address = [address cStringUsingEncoding:NSUTF8StringEncoding];
+        struct tx_t *txs = malloc(sizeof(txs) * limit.intValue);
+        if (!txs)
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        else {
+            struct int_result_t result = lzap_address_transactions(c_address, txs, limit.intValue);
+            if (result.success) {
+                NSMutableArray *tx_array = [NSMutableArray array];
+                for (int i = 0; i < result.value; i++) {
+                    //NSMutableDictionary *tx = [NSMutableDictionary dictionary];
+                    NSDictionary *tx = @{
+                        @"id" : [NSString stringWithUTF8String:txs[i].id],
+                        @"sender" : [NSString stringWithUTF8String:txs[i].sender],
+                        @"recipient" : [NSString stringWithUTF8String:txs[i].recipient],
+                        @"asset_id" : [NSString stringWithUTF8String:txs[i].asset_id],
+                        @"fee_asset" : [NSString stringWithUTF8String:txs[i].fee_asset],
+                        @"attachment" : [NSString stringWithUTF8String:txs[i].attachment],
+                        @"amount" : [NSNumber numberWithUnsignedLongLong:txs[i].amount],
+                        @"fee" : [NSNumber numberWithUnsignedLongLong:txs[i].fee],
+                        @"timestamp" : [NSNumber numberWithUnsignedLongLong:txs[i].timestamp]
+                    };
+                    [tx_array addObject:tx];
+                }
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:tx_array];
+            }
+            else
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+            free(txs);
+        }
     } else {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     }
