@@ -74,4 +74,24 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
+- (void)addressBalance:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+
+    NSString* address = [command.arguments objectAtIndex:0];
+
+    if (address != nil && [address length] > 0) {
+        const char *c_address = [address cStringUsingEncoding:NSUTF8StringEncoding];
+        struct int_result_t result = lzap_address_balance(c_address);
+        if (result.success)
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:result.value];
+        else
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+    }
+
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 @end
