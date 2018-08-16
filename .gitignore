@@ -7,3 +7,6 @@ demoApp/platforms/android/CordovaLib/build
 demoApp/platforms/android/.gradle
 demoApp/platforms/android/app/build
 sdk-tools-linux-4333796.zip
+demoApp/platforms/ios/HelloCordova.xcworkspace
+demoApp/platforms/ios/HelloCordova.xcodeproj
+demoApp/platforms/ios/CordovaLib/CordovaLib.xcodeproj/
