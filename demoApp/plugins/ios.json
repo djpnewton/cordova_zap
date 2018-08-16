@@ -8,7 +8,7 @@
   },
   "installed_plugins": {
     "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "com.djpsoft.zap.demoApp"
+      "PACKAGE_NAME": "com.djpsoft.zap.demoApp2"
     },
     "com.djpsoft.zap.plugin": {
       "PACKAGE_NAME": "com.djpsoft.zap.demoApp2"
