@@ -50,6 +50,18 @@ var app = {
         cordova.plugins.zap.version(function(version) {
             self.addSection("version: " + version);
         });
+        cordova.plugins.zap.nodeGet(function(url) {
+            self.addSection("node: " + url);
+            cordova.plugins.zap.nodeSet(url, function() {
+                self.addSection("node set: success");
+            });
+        });
+        cordova.plugins.zap.networkGet(function(network) {
+            self.addSection("network: " + network);
+            cordova.plugins.zap.networkSet(network, function() {
+                self.addSection("network set: success");
+            });
+        });
         cordova.plugins.zap.mnemonicCreate(function(mnemonic) {
             self.addSection("mnemonic: " + mnemonic);
             cordova.plugins.zap.mnemonicCheck(mnemonic, function(mnemonic_ok) {
@@ -58,6 +70,14 @@ var app = {
             function(err) {
                 self.addSection("mnemonic error: " + err);
             });
+        });
+        cordova.plugins.zap.mnemonicWordlist(function(words) {
+            self.addSection("word list: " + words[0] + ".." + words[words.length-1] + " (" + words.length + ")");
+        });
+        var uri = "waves://3MpkEPnU3KkDYkFGwivUn2psMQo74MX4fyJ?asset=CgUrFtinLXEbJwJVjwwcppk4Vpz1nMmR3H5cQaDcUcfe&amount=10&attachment=hi there";
+        cordova.plugins.zap.uriParse(uri, function(result) {
+            var str = "<pre>" + JSON.stringify(result, null, 2) + "</pre>";
+            self.addSection("uri parse: " + uri + str);
         });
         cordova.plugins.zap.seedAddress("daniel", function(address) {
             self.addSection("address: " + address);
