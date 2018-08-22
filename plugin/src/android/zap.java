@@ -28,6 +28,24 @@ public class zap extends CordovaPlugin {
             this.version(callbackContext);
             return true;
         }
+        if (action.equals("nodeGet")) {
+            this.nodeGet(callbackContext);
+            return true;
+        }
+        if (action.equals("nodeSet")) {
+            String url = args.getString(0);
+            this.nodeSet(url, callbackContext);
+            return true;
+        }
+        if (action.equals("networkGet")) {
+            this.networkGet(callbackContext);
+            return true;
+        }
+        if (action.equals("networkSet")) {
+            String networkByte = args.getString(0);
+            this.networkSet(networkByte, callbackContext);
+            return true;
+        }
         if (action.equals("mnemonicCreate")) {
             this.mnemonicCreate(callbackContext);
             return true;
@@ -77,6 +95,42 @@ public class zap extends CordovaPlugin {
     private void version(CallbackContext callbackContext) {
         int version = zap_jni.version();
         callbackContext.success(version);
+    }
+
+    private void nodeGet(CallbackContext callbackContext) {
+        String url = zap_jni.node_get();
+        callbackContext.success(url);
+    }
+
+    private void nodeSet(String url, CallbackContext callbackContext) {
+        try {
+            zap_jni.node_set(url);
+            callbackContext.success();
+        }
+        catch (Exception e) {
+            Log.e(TAG, "exception", e);
+            callbackContext.error(e.getMessage());
+        }
+    }
+
+    private void networkGet(CallbackContext callbackContext) {
+        char network_byte = zap_jni.network_get();
+        callbackContext.success(network_byte);
+    }
+
+    private void networkSet(String networkByte, CallbackContext callbackContext) {
+        try {
+            if (networkByte != null && networkByte.length() == 1) {
+                zap_jni.network_set(networkByte.charAt(0));
+                callbackContext.success();
+            }
+            else
+                callbackContext.error("networkByte parameter is not valid - single character string required");
+        }
+        catch (Exception e) {
+            Log.e(TAG, "exception", e);
+            callbackContext.error(e.getMessage());
+        }
     }
 
     private void mnemonicCreate(CallbackContext callbackContext) {
