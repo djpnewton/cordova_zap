@@ -16,6 +16,7 @@
         <source-file src="src/android/IntResult.java" target-dir="src/com/djpsoft/zap/plugin" />
         <source-file src="src/android/Tx.java" target-dir="src/com/djpsoft/zap/plugin" />
         <source-file src="src/android/SpendTx.java" target-dir="src/com/djpsoft/zap/plugin" />
+        <source-file src="src/android/WavesPaymentRequest.java" target-dir="src/com/djpsoft/zap/plugin" />
         <source-file src="src/android/libs/armeabi-v7a/libzap.so" target-dir="libs/armeabi-v7a" />
     </platform>
     <platform name="ios">

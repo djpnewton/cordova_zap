@@ -93,6 +93,11 @@ public class zap extends CordovaPlugin {
             this.transactionBroadcast(spendTx, callbackContext);
             return true;
         }
+        if (action.equals("uriParse")) {
+            String uri = args.getString(0);
+            this.uriParse(uri, callbackContext);
+            return true;
+        }
         return false;
     }
 
@@ -310,6 +315,35 @@ public class zap extends CordovaPlugin {
             }
             else
                 callbackContext.error("failed to broadcast tx");
+        }
+        catch (Exception e) {
+            Log.e(TAG, "exception", e);
+            callbackContext.error(e.getMessage());
+        }
+    }
+
+    private void populateJsonPaymentReq(JSONObject jsonReq, WavesPaymentRequest req) throws JSONException {
+        jsonReq.put("address", req.Address);
+        jsonReq.put("attachment", req.Attachment);
+        jsonReq.put("asset_id", req.AssetId);
+        jsonReq.put("amount", req.Amount);
+    }
+
+    private void uriParse(String uri, CallbackContext callbackContext) {
+        try {
+            // call into jni
+            Log.d(TAG, String.format("uriParse: %s", uri));
+            WavesPaymentRequest reqJ = new WavesPaymentRequest();
+            int result = zap_jni.uri_parse(uri, reqJ);
+            if (result != 0) {
+                JSONObject jsonReq = new JSONObject();
+                populateJsonPaymentReq(jsonReq, reqJ);
+                callbackContext.success(jsonReq);
+            }
+            else {
+                Log.e(TAG, "failed to parse uri");
+                callbackContext.error("failed to parse uri");
+            }
         }
         catch (Exception e) {
             Log.e(TAG, "exception", e);

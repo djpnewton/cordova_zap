@@ -87,7 +87,7 @@ var app = {
             function(err) {
                 self.addSection("balance error: " + err);
             });
-            cordova.plugins.zap.addressTransactions(address, 10, function(txs) {
+            cordova.plugins.zap.addressTransactions(address, 3, function(txs) {
                 self.addSection("<div id='txs'>transactions: " + txs.length + "</div>");
                 for (var i = 0; i < txs.length; i++) {
                     var str = "<pre>" + JSON.stringify(txs[i], null, 2) + "</pre>";
