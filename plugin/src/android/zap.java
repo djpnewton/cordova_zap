@@ -55,6 +55,10 @@ public class zap extends CordovaPlugin {
             this.mnemonicCheck(mnemonic, callbackContext);
             return true;
         }
+        if (action.equals("mnemonicWordlist")) {
+            this.mnemonicWordlist(callbackContext);
+            return true;
+        }
         if (action.equals("seedAddress")) {
             String seed = args.getString(0);
             this.seedAddress(seed, callbackContext);
@@ -151,6 +155,24 @@ public class zap extends CordovaPlugin {
         try {
             int result = zap_jni.mnemonic_check(mnemonic);
             callbackContext.success(result);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "exception", e);
+            callbackContext.error(e.getMessage());
+        }
+    }
+
+    private void mnemonicWordlist(CallbackContext callbackContext) {
+        try {
+            String[] words = zap_jni.mnemonic_wordlist();
+            if (words != null) {
+                JSONArray jsonWords = new JSONArray();
+                for (int i = 0; i < words.length; i++)
+                    jsonWords.put(words[i]);
+                callbackContext.success(jsonWords);
+            }
+            else
+                callbackContext.error("unable to create wordlist");
         }
         catch (Exception e) {
             Log.e(TAG, "exception", e);
