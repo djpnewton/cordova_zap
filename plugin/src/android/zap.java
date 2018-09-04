@@ -101,6 +101,21 @@ public class zap extends CordovaPlugin {
         return false;
     }
 
+    private void error(CallbackContext callbackContext) {
+        try {
+            String[] msg_out = new String[1];
+            int code = zap_jni.error(msg_out);
+            JSONObject err = new JSONObject();
+            err.put("code", code);
+            err.put("message", msg_out[0]);
+            callbackContext.error(err);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "exception", e);
+            callbackContext.error(e.getMessage());
+        }
+    }
+
     private void version(CallbackContext callbackContext) {
         int version = zap_jni.version();
         callbackContext.success(version);
@@ -130,8 +145,11 @@ public class zap extends CordovaPlugin {
     private void networkSet(String networkByte, CallbackContext callbackContext) {
         try {
             if (networkByte != null && networkByte.length() == 1) {
-                zap_jni.network_set(networkByte.charAt(0));
-                callbackContext.success();
+                int result = zap_jni.network_set(networkByte.charAt(0));
+                if (result != 0)
+                    callbackContext.success();
+                else
+                    error(callbackContext);
             }
             else
                 callbackContext.error("networkByte parameter is not valid - single character string required");
@@ -203,7 +221,7 @@ public class zap extends CordovaPlugin {
                 //TODO: how to return long ints :(
                 callbackContext.success((int)balance.Value);
             else
-                callbackContext.error("unable to get balance");
+                error(callbackContext);
         }
         catch (Exception e) {
             Log.e(TAG, "exception", e);
@@ -244,7 +262,7 @@ public class zap extends CordovaPlugin {
             else
             {
                 Log.e(TAG, "addressTransactions failed");
-                callbackContext.error("unable to get result");
+                error(callbackContext);
             }
         }
         catch (Exception e) {
@@ -265,7 +283,7 @@ public class zap extends CordovaPlugin {
             else
             {
                 Log.e(TAG, "transactionFee failed");
-                callbackContext.error("unable to get result");
+                error(callbackContext);
             }
         }
         catch (Exception e) {
@@ -288,7 +306,7 @@ public class zap extends CordovaPlugin {
             else
             {
                 Log.e(TAG, "transactionCreate failed");
-                callbackContext.error("unable to get result");
+                error(callbackContext);
             }
         }
         catch (Exception e) {
@@ -314,7 +332,7 @@ public class zap extends CordovaPlugin {
                 callbackContext.success(jsonTx);
             }
             else
-                callbackContext.error("failed to broadcast tx");
+                error(callbackContext);
         }
         catch (Exception e) {
             Log.e(TAG, "exception", e);
@@ -342,7 +360,7 @@ public class zap extends CordovaPlugin {
             }
             else {
                 Log.e(TAG, "failed to parse uri");
-                callbackContext.error("failed to parse uri");
+                error(callbackContext);
             }
         }
         catch (Exception e) {
