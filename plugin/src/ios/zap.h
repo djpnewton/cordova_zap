@@ -42,14 +42,26 @@ struct waves_payment_request_t
     uint64_t amount;
 };
 
+#define LZAP_ERR_NONE 0
+#define LZAP_ERR_INVALID_NETWORK 1
+#define LZAP_ERR_NETWORK_UNREACHABLE 2
+#define LZAP_ERR_INVALID_ADDRESS 3
+#define LZAP_ERR_INVALID_ATTACHMENT 4
+#define LZAP_ERR_UNAVAILABLE_FUNDS 5
+#define LZAP_ERR_INSUFFICIENT_FEE 6
+#define LZAP_ERR_INVALID_WAVES_URI 7
+#define LZAP_ERR_INVALID_ASSET_ID 8
+#define LZAP_ERR_UNSPECIFIED -1
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+    void lzap_error(int *code, const char** msg);
     int lzap_version();
     const char* lzap_node_get();
     void lzap_node_set(const char *url);
     char lzap_network_get();
-    void lzap_network_set(char network_byte);
+    bool lzap_network_set(char network_byte);
     bool lzap_mnemonic_create(char *output, size_t size);
     bool lzap_mnemonic_check(const char *mnemonic);
     const char* const* lzap_mnemonic_wordlist();

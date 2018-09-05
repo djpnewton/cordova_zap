@@ -37,6 +37,10 @@ var app = {
         ele.setAttribute('style', 'display:none;');
     },
 
+    stringifyAndPre: function(obj) {
+        return "<pre>" + JSON.stringify(obj, null, 2) + "</pre>";
+    },
+
     // deviceready Event Handler
     //
     // Bind any cordova events here. Common events are:
@@ -76,27 +80,30 @@ var app = {
         });
         var uri = "waves://3MpkEPnU3KkDYkFGwivUn2psMQo74MX4fyJ?asset=CgUrFtinLXEbJwJVjwwcppk4Vpz1nMmR3H5cQaDcUcfe&amount=10&attachment=hi there";
         cordova.plugins.zap.uriParse(uri, function(result) {
-            var str = "<pre>" + JSON.stringify(result, null, 2) + "</pre>";
-            self.addSection("uri parse: " + uri + str);
+            self.addSection("uri parse: " + uri + self.stringifyAndPre(result));
         });
+        var uri2 = "invalid_uri";
+        cordova.plugins.zap.uriParse(uri2, function(result) {},
+            function(err) {
+                self.addSection("uri parse error: " + uri2 + self.stringifyAndPre(err));
+            });
         cordova.plugins.zap.seedAddress("daniel", function(address) {
             self.addSection("address: " + address);
             cordova.plugins.zap.addressBalance(address, function(balance) {
                 self.addSection("balance: " + balance);
             },
             function(err) {
-                self.addSection("balance error: " + err);
+                self.addSection("balance error: " + self.stringifyAndPre(err));
             });
-            cordova.plugins.zap.addressTransactions(address, 10, function(txs) {
+            cordova.plugins.zap.addressTransactions(address, 3, function(txs) {
                 self.addSection("<div id='txs'>transactions: " + txs.length + "</div>");
                 for (var i = 0; i < txs.length; i++) {
-                    var str = "<pre>" + JSON.stringify(txs[i], null, 2) + "</pre>";
-                    self.addSubSection(str, "txs");
+                    self.addSubSection(self.stringifyAndPre(txs[i]), "txs");
                     self.hideSpinner();
                 }
             },
             function(err) {
-                self.addSection("transactions error: " + err);
+                self.addSection("transactions error: " + self.stringifyAndPre(err));
                 self.hideSpinner();
             });
         });
@@ -111,11 +118,11 @@ var app = {
                 cordova.plugins.zap.transactionCreate(seed, address, amount, fee, attachment, function(tx) {
                     self.addSection("created tx: " + tx.data + " - " + tx.signature);
                     cordova.plugins.zap.transactionBroadcast(tx, function(result) {
-                        var str = "broadcast tx: <pre>" + JSON.stringify(result, null, 2) + "</pre>";
+                        var str = "broadcast tx: " + self.stringifyAndPre(result);
                         self.addSection(str);
                     },
                     function(err) {
-                        self.addSection("broadcast tx: " + err);
+                        self.addSection("broadcast tx error: " + self.stringifyAndPre(err));
                     });
                 },
                 function(err) {

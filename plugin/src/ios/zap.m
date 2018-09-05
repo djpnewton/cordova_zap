@@ -9,6 +9,7 @@
 }
 
 + (NSDictionary*)txDict:(struct tx_t)tx;
++ (CDVPluginResult*)error;
 
 - (void)version:(CDVInvokedUrlCommand*)command;
 - (void)nodeGet:(CDVInvokedUrlCommand*)command;
@@ -42,6 +43,18 @@
              @"fee" : [NSNumber numberWithUnsignedLongLong:tx.fee],
              @"timestamp" : [NSNumber numberWithUnsignedLongLong:tx.timestamp]
              };
+}
+
++ (CDVPluginResult*)error
+{
+    int c_code;
+    const char *c_msg;
+    lzap_error(&c_code, &c_msg);
+    NSDictionary *err = @{
+                         @"code" : [NSNumber numberWithInt:c_code],
+                         @"message" : [NSString stringWithUTF8String:c_msg],
+                        };
+    return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:err];
 }
 
 - (void)version:(CDVInvokedUrlCommand*)command
@@ -97,8 +110,10 @@
     NSString *network = [command.arguments objectAtIndex:0];
     if (network != nil && [network length] == 1) {
         char c_network = [network characterAtIndex:0];
-        lzap_network_set(c_network);
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        if (lzap_network_set(c_network))
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        else
+            pluginResult = [zap error];
     } else
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
 
@@ -183,7 +198,7 @@
         if (result.success)
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:result.value];
         else
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+            pluginResult = [zap error];
     } else
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
 
@@ -214,7 +229,7 @@
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:tx_array];
             }
             else
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+                pluginResult = [zap error];
         }
     } else
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
@@ -230,7 +245,7 @@
     if (result.success)
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:result.value];
     else
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        pluginResult = [zap error];
 
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
@@ -265,7 +280,7 @@
             };
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:spend_tx];
         } else
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+            pluginResult = [zap error];
     } else
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
 
@@ -297,7 +312,7 @@
             NSDictionary *tx = [zap txDict:broadcast_tx];
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:tx];
         } else
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+            pluginResult = [zap error];
     } else
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
 
@@ -324,7 +339,7 @@
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:request];
         }
         else
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+            pluginResult = [zap error];
     } else
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     
