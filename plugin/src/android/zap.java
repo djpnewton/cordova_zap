@@ -218,8 +218,7 @@ public class zap extends CordovaPlugin {
         try {
             IntResult balance = zap_jni.address_balance(address);
             if (balance.Success)
-                //TODO: how to return long ints :(
-                callbackContext.success((int)balance.Value);
+                callbackContext.success(Long.toString(balance.Value));
             else
                 error(callbackContext);
         }
@@ -277,8 +276,7 @@ public class zap extends CordovaPlugin {
             Log.d(TAG, String.format("calling transaction_fee"));
             IntResult result = zap_jni.transaction_fee();
             if (result.Success) {
-                //TODO: how to return long ints :(
-                callbackContext.success((int)result.Value);
+                callbackContext.success(Long.toString(result.Value));
             }
             else
             {

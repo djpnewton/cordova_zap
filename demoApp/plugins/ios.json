@@ -10,10 +10,10 @@
     "cordova-plugin-whitelist": {
       "PACKAGE_NAME": "com.djpsoft.zap.demoApp2"
     },
-    "com.djpsoft.zap.plugin": {
+    "cordova-plugin-qrscanner": {
       "PACKAGE_NAME": "com.djpsoft.zap.demoApp2"
     },
-    "cordova-plugin-qrscanner": {
+    "com.djpsoft.zap.plugin": {
       "PACKAGE_NAME": "com.djpsoft.zap.demoApp2"
     }
   },

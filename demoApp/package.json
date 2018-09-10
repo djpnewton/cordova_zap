@@ -19,8 +19,8 @@
     "cordova": {
         "plugins": {
             "cordova-plugin-whitelist": {},
-            "com.djpsoft.zap.plugin": {},
-            "cordova-plugin-qrscanner": {}
+            "cordova-plugin-qrscanner": {},
+            "com.djpsoft.zap.plugin": {}
         },
         "platforms": [
             "android",
