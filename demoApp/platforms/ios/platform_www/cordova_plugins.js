@@ -7,13 +7,23 @@ module.exports = [
     "clobbers": [
       "cordova.plugins.zap"
     ]
+  },
+  {
+    "id": "cordova-plugin-qrscanner.QRScanner",
+    "file": "plugins/cordova-plugin-qrscanner/www/www.min.js",
+    "pluginId": "cordova-plugin-qrscanner",
+    "clobbers": [
+      "QRScanner"
+    ]
   }
 ];
 module.exports.metadata = 
 // TOP OF METADATA
 {
   "cordova-plugin-whitelist": "1.3.3",
-  "com.djpsoft.zap.plugin": "0.0.1"
+  "com.djpsoft.zap.plugin": "0.0.1",
+  "cordova-plugin-add-swift-support": "1.7.2",
+  "cordova-plugin-qrscanner": "2.6.0"
 };
 // BOTTOM OF METADATA
 });

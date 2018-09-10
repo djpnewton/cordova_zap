@@ -12,7 +12,14 @@
     },
     "com.djpsoft.zap.plugin": {
       "PACKAGE_NAME": "com.djpsoft.zap.demoApp2"
+    },
+    "cordova-plugin-qrscanner": {
+      "PACKAGE_NAME": "com.djpsoft.zap.demoApp2"
     }
   },
-  "dependent_plugins": {}
+  "dependent_plugins": {
+    "cordova-plugin-add-swift-support": {
+      "PACKAGE_NAME": "com.djpsoft.zap.demoApp2"
+    }
+  }
 }
