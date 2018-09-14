@@ -160,7 +160,7 @@ var app = {
                         document.getElementById("attachment").value = result.attachment;
                     },
                     function(err) {
-                        self.addSection("uri parse error: " + uri2 + self.stringifyAndPre(err));
+                        self.addSection("uri parse error: " + err + self.stringifyAndPre(err));
                     });
                 document.getElementById("app").setAttribute("style", "display:block");
                 QRScanner.destroy();
