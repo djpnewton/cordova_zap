@@ -32,6 +32,11 @@ var app = {
         ele.innerHTML += "<div class='zapsubsection'>" + str + "</div>";
     },
 
+    showSpinner: function() {
+        var ele = document.getElementById("spinner");
+        ele.setAttribute('style', 'display:block;');
+    },
+
     hideSpinner: function() {
         var ele = document.getElementById("spinner");
         ele.setAttribute('style', 'display:none;');
@@ -41,14 +46,10 @@ var app = {
         return "<pre>" + JSON.stringify(obj, null, 2) + "</pre>";
     },
 
-    // deviceready Event Handler
-    //
-    // Bind any cordova events here. Common events are:
-    // 'pause', 'resume', etc.
-    onDeviceReady: function() {
+    runTests: function() {
         var self = this;
 
-        self.receivedEvent('deviceready');
+        self.showSpinner();
 
         self.addSection("calling libzap...");
         cordova.plugins.zap.version(function(version) {
@@ -108,6 +109,18 @@ var app = {
             });
         });
         self.addSection("called libzap.");
+    },
+
+    // deviceready Event Handler
+    //
+    // Bind any cordova events here. Common events are:
+    // 'pause', 'resume', etc.
+    onDeviceReady: function() {
+        var self = this;
+
+        self.receivedEvent('deviceready');
+        self.hideSpinner();
+
         var sendbtn = document.getElementById("sendbtn");
         sendbtn.onclick = function() {
             var seed = document.getElementById("seed").value;
@@ -132,6 +145,36 @@ var app = {
             function(err) {
                 self.addSection("fee: " + err);
             });
+        };
+
+        var scanbtn = document.getElementById("scanbtn");
+        scanbtn.onclick = function() {
+            var callback = function(err, contents){
+                if(err){
+                    console.error(err._message);
+                }
+                cordova.plugins.zap.uriParse(contents,
+                    function(result) {
+                        document.getElementById("address").value = result.address;
+                        document.getElementById("amount").value = result.amount;
+                        document.getElementById("attachment").value = result.attachment;
+                    },
+                    function(err) {
+                        self.addSection("uri parse error: " + err + self.stringifyAndPre(err));
+                    });
+                document.getElementById("app").setAttribute("style", "display:block");
+                QRScanner.destroy();
+            };
+            QRScanner.scan(callback);
+            QRScanner.show(function(status){
+                document.getElementById("app").setAttribute("style", "display:none");
+                console.log(status);
+            });
+        };
+
+        var testbtn = document.getElementById("testbtn");
+        testbtn.onclick = function() {
+            self.runTests();
         };
     },
 

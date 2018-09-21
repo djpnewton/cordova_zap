@@ -13,6 +13,7 @@ struct int_result_t
 #define MAX_TXFIELD 1024
 struct tx_t
 {
+    uint64_t type;
     char id[MAX_TXFIELD];
     char sender[MAX_TXFIELD];
     char recipient[MAX_TXFIELD];
@@ -53,7 +54,7 @@ struct waves_payment_request_t
 #define LZAP_ERR_INVALID_ASSET_ID 8
 #define LZAP_ERR_UNSPECIFIED -1
 
-#define LZAP_VERSION 2
+#define LZAP_VERSION 3
 
 #ifdef __cplusplus
 extern "C" {

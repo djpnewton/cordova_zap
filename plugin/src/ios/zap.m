@@ -33,6 +33,7 @@
 + (NSDictionary*)txDict:(struct tx_t)tx
 {
     return @{
+             @"type" : [NSNumber numberWithUnsignedLongLong:tx.type],
              @"id" : [NSString stringWithUTF8String:tx.id],
              @"sender" : [NSString stringWithUTF8String:tx.sender],
              @"recipient" : [NSString stringWithUTF8String:tx.recipient],

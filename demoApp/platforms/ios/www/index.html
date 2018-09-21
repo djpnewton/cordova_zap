@@ -36,7 +36,7 @@
         <title>Hello World</title>
     </head>
     <body>
-        <div class="app">
+        <div class="app" id="app">
             <div id="deviceready" class="blink">
                 <p class="event listening">Connecting to Device</p>
                 <p class="event received">Device is Ready</p>
@@ -46,10 +46,20 @@
                 Zaplog
             </div>
             <div class="zapsection">
+                <button id="testbtn">
+                    run tests
+                </button>
+            </div>
+            <div class="zapsection">
+                <button id="scanbtn">
+                    scan
+                </button>
+            </div>
+            <div class="zapsection">
                 Send form:</br>
                 <div class="zapsubsection">
                     seed: </br>
-                    <input id="seed" value="daniel"/>
+                    <input id="seed" value="<YOUR_SEED_HERE>"/>
                 </div>
                 <div class="zapsubsection">
                     address: </br>

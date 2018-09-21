@@ -23,7 +23,7 @@ module.exports.metadata =
   "cordova-plugin-whitelist": "1.3.3",
   "cordova-plugin-add-swift-support": "1.7.2",
   "cordova-plugin-qrscanner": "2.6.0",
-  "com.djpsoft.zap.plugin": "0.0.2"
+  "com.djpsoft.zap.plugin": "0.0.3"
 };
 // BOTTOM OF METADATA
 });

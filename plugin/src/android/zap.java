@@ -229,6 +229,7 @@ public class zap extends CordovaPlugin {
     }
     
     private void populateJsonTx(JSONObject jsonTx, Tx tx) throws JSONException {
+        jsonTx.put("type", tx.Type);
         jsonTx.put("id", tx.Id);
         jsonTx.put("sender", tx.Sender);
         jsonTx.put("recipient", tx.Recipient);
