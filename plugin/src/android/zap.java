@@ -64,6 +64,11 @@ public class zap extends CordovaPlugin {
             this.seedAddress(seed, callbackContext);
             return true;
         }
+        if (action.equals("addressCheck")) {
+            String address = args.getString(0);
+            this.addressCheck(address, callbackContext);
+            return true;
+        }
         if (action.equals("addressBalance")) {
             String address = args.getString(0);
             this.addressBalance(address, callbackContext);
@@ -214,6 +219,20 @@ public class zap extends CordovaPlugin {
         }
     }
 
+    private void addressCheck(String address, CallbackContext callbackContext) {
+        try {
+            IntResult balance = zap_jni.address_check(address);
+            if (balance.Success)
+                callbackContext.success(Long.toString(balance.Value));
+            else
+                error(callbackContext);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "exception", e);
+            callbackContext.error(e.getMessage());
+        }
+    }
+    
     private void addressBalance(String address, CallbackContext callbackContext) {
         try {
             IntResult balance = zap_jni.address_balance(address);

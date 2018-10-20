@@ -90,6 +90,12 @@ var app = {
             });
         cordova.plugins.zap.seedAddress("daniel", function(address) {
             self.addSection("address: " + address);
+            cordova.plugins.zap.addressCheck(address, function(check) {
+                self.addSection("addr check: " + check);
+            },
+            function(err) {
+                self.addSection("addr check error: " + self.stringifyAndPre(err));
+            });
             cordova.plugins.zap.addressBalance(address, function(balance) {
                 self.addSection("balance: " + balance);
             },

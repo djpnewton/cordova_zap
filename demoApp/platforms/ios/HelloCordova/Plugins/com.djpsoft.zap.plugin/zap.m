@@ -20,6 +20,7 @@
 - (void)mnemonicCheck:(CDVInvokedUrlCommand*)command;
 - (void)mnemonicWordlist:(CDVInvokedUrlCommand*)command;
 - (void)seedAddress:(CDVInvokedUrlCommand*)command;
+- (void)addressCheck:(CDVInvokedUrlCommand*)command;
 - (void)addressBalance:(CDVInvokedUrlCommand*)command;
 - (void)addressTransactions:(CDVInvokedUrlCommand*)command;
 - (void)transactionFee:(CDVInvokedUrlCommand*)command;
@@ -181,6 +182,25 @@
         lzap_seed_address(c_seed, c_address);
         NSString *address = [NSString stringWithUTF8String:c_address];
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:address];
+    } else
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)addressCheck:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+
+    NSString* address = [command.arguments objectAtIndex:0];
+
+    if (address != nil && [address length] > 0) {
+        const char *c_address = [address cStringUsingEncoding:NSUTF8StringEncoding];
+        struct int_result_t result = lzap_address_check(c_address);
+        if (result.success)
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:result.value];
+        else
+            pluginResult = [zap error];
     } else
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
 
