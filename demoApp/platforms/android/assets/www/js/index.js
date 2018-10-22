@@ -75,6 +75,12 @@ var app = {
             self.addSection("node: " + url);
             cordova.plugins.zap.nodeSet(url, function() {
                 self.addSection("node set: success");
+                cordova.plugins.zap.nodeSet("", function() {
+                    self.addSection("node clear: success");
+                },
+                function(err) {
+                    self.addSection("node clear error: " + err);
+                });
             });
         });
         cordova.plugins.zap.networkGet(function(network) {
@@ -116,12 +122,28 @@ var app = {
                 self.addSection("uri parse error: " + uri2 + self.stringifyAndPre(err));
             });
         cordova.plugins.zap.seedAddress("daniel", function(address) {
-            self.addSection("address: " + address);
+            self.addSection("address check: " + address);
             cordova.plugins.zap.addressCheck(address, function(check) {
                 self.addSection("addr check: " + check);
             },
             function(err) {
                 self.addSection("addr check error: " + self.stringifyAndPre(err));
+            });
+            var addr_testnet = "3MzXK4jd8t7SniG6EPuw3qo7dST36TEawB9";
+            self.addSection("address check (testnet): " + addr_testnet);
+            cordova.plugins.zap.addressCheck(addr_testnet, function(check) {
+                self.addSection("addr check (testnet): " + check);
+            },
+            function(err) {
+                self.addSection("addr check (testnet) error: " + self.stringifyAndPre(err));
+            });
+            var addr_mainnet = "3PCY824X11eqRAZWVUAw1JAvzKxovY6FoiA";
+            self.addSection("address check (mainnet): " + addr_mainnet);
+            cordova.plugins.zap.addressCheck(addr_mainnet, function(check) {
+                self.addSection("addr check (mainnet): " + check);
+            },
+            function(err) {
+                self.addSection("addr check (mainnet) error: " + self.stringifyAndPre(err));
             });
             cordova.plugins.zap.addressBalance(address, function(balance) {
                 self.addSection("balance: " + balance);

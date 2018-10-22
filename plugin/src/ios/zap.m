@@ -85,7 +85,7 @@
     CDVPluginResult* pluginResult = nil;
     NSString* url = [command.arguments objectAtIndex:0];
 
-    if (url != nil && [url length] > 0) {
+    if (url != nil) {
         const char *c_url = [url cStringUsingEncoding:NSUTF8StringEncoding];
         lzap_node_set(c_url);
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
