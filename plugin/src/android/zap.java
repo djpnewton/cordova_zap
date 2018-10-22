@@ -144,7 +144,7 @@ public class zap extends CordovaPlugin {
 
     private void networkGet(CallbackContext callbackContext) {
         char network_byte = zap_jni.network_get();
-        callbackContext.success(network_byte);
+        callbackContext.success(Character.toString(network_byte));
     }
 
     private void networkSet(String networkByte, CallbackContext callbackContext) {

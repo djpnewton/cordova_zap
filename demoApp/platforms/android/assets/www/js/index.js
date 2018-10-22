@@ -46,6 +46,22 @@ var app = {
         return "<pre>" + JSON.stringify(obj, null, 2) + "</pre>";
     },
 
+    clear: function() {
+        var self = this;
+
+        var zaplog = document.getElementById("zaplog");
+        zaplog.innerHTML = "";
+    },
+
+    mainnet: function() {
+        var self = this;
+
+        self.addSection("setting mainnet in libzap...");
+        cordova.plugins.zap.networkSet("W", function(result) {
+            self.addSection("network set: " + result);
+        });
+    },
+
     runTests: function() {
         var self = this;
 
@@ -79,10 +95,21 @@ var app = {
         cordova.plugins.zap.mnemonicWordlist(function(words) {
             self.addSection("word list: " + words[0] + ".." + words[words.length-1] + " (" + words.length + ")");
         });
-        var uri = "waves://3MpkEPnU3KkDYkFGwivUn2psMQo74MX4fyJ?asset=CgUrFtinLXEbJwJVjwwcppk4Vpz1nMmR3H5cQaDcUcfe&amount=10&attachment=hi there";
-        cordova.plugins.zap.uriParse(uri, function(result) {
-            self.addSection("uri parse: " + uri + self.stringifyAndPre(result));
+        cordova.plugins.zap.networkGet(function(network) {
+            var uri = "waves://3MpkEPnU3KkDYkFGwivUn2psMQo74MX4fyJ?asset=CgUrFtinLXEbJwJVjwwcppk4Vpz1nMmR3H5cQaDcUcfe&amount=10&attachment=hi there";
+            if (network == "W")
+                uri = "waves://3PCY824X11eqRAZWVUAw1JAvzKxovY6FoiA?asset=9R3iLi4qGLVWKc16Tg98gmRvgg1usGEYd7SgC1W5D6HB&amount=10&attachment=hi there";
+            cordova.plugins.zap.uriParse(uri, function(result) {
+                self.addSection("uri parse: " + uri + self.stringifyAndPre(result));
+            },
+            function(err) {
+                self.addSection("uri parse error: " + uri + self.stringifyAndPre(err));
+            });
+        },
+        function(err) {
+            self.addSection("network get error: " + self.stringifyAndPre(err));
         });
+
         var uri2 = "invalid_uri";
         cordova.plugins.zap.uriParse(uri2, function(result) {},
             function(err) {
@@ -176,6 +203,16 @@ var app = {
                 document.getElementById("app").setAttribute("style", "display:none");
                 console.log(status);
             });
+        };
+
+        var clearbtn = document.getElementById("clearbtn");
+        clearbtn.onclick = function() {
+            self.clear();
+        };
+
+        var mainnetbtn = document.getElementById("mainnetbtn");
+        mainnetbtn.onclick = function() {
+            self.mainnet();
         };
 
         var testbtn = document.getElementById("testbtn");
