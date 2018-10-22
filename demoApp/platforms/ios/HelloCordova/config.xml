@@ -22,6 +22,9 @@
     <feature name="QRScanner">
         <param name="ios-package" value="QRScanner" />
     </feature>
+    <feature name="zap">
+        <param name="ios-package" value="zap" />
+    </feature>
     <name>HelloCordova</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
@@ -52,7 +55,4 @@
     <preference name="PageLength" value="0" />
     <preference name="PaginationBreakingMode" value="page" />
     <preference name="PaginationMode" value="unpaginated" />
-    <feature name="zap">
-        <param name="ios-package" value="zap" />
-    </feature>
 </widget>
