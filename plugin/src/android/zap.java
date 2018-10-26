@@ -1,5 +1,8 @@
 package com.djpsoft.zap.plugin;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import android.util.Log;
 import android.util.Base64;
 
@@ -15,11 +18,15 @@ import org.json.JSONObject;
  */
 public class zap extends CordovaPlugin {
     private static final String TAG = "LIBZAPj";
-    private static final char NETWORK_BYTE = 'T';
+    private static final char DEFAULT_NETWORK_BYTE = 'T';
+    private ExecutorService executor = null;
 
     public zap()
     {
-        zap_jni.network_set(NETWORK_BYTE);
+        // set the default network
+        zap_jni.network_set(DEFAULT_NETWORK_BYTE);
+        // create our thread pool
+        executor = Executors.newSingleThreadExecutor(); 
     }
 
     @Override
@@ -233,18 +240,22 @@ public class zap extends CordovaPlugin {
         }
     }
     
-    private void addressBalance(String address, CallbackContext callbackContext) {
-        try {
-            IntResult balance = zap_jni.address_balance(address);
-            if (balance.Success)
-                callbackContext.success(Long.toString(balance.Value));
-            else
-                error(callbackContext);
-        }
-        catch (Exception e) {
-            Log.e(TAG, "exception", e);
-            callbackContext.error(e.getMessage());
-        }
+    private void addressBalance(final String address, final CallbackContext callbackContext) {
+        executor.execute(new Runnable() {
+            @Override public void run() {
+                try {
+                    IntResult balance = zap_jni.address_balance(address);
+                    if (balance.Success)
+                        callbackContext.success(Long.toString(balance.Value));
+                    else
+                        error(callbackContext);
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "exception", e);
+                    callbackContext.error(e.getMessage());
+                }
+            }
+        });
     }
     
     private void populateJsonTx(JSONObject jsonTx, Tx tx) throws JSONException {
@@ -259,55 +270,63 @@ public class zap extends CordovaPlugin {
         jsonTx.put("timestamp", tx.Timestamp);
     }
 
-    private void addressTransactions(String address, int count, CallbackContext callbackContext) {
-        try {
-            // initialize txs with preallocated tx objects
-            Tx[] txs = new Tx[count];
-            for (int i = 0; i < count; i++)
-                txs[i] = new Tx();
-            // call into jni
-            Log.d(TAG, String.format("calling address_transactions with count: %d", count));
-            IntResult result = zap_jni.address_transactions(address, txs, count);
-            if (result.Success) {
-                JSONArray jsonTxs = new JSONArray();
-                for (int i = 0; i < (int)result.Value; i++) {
-                    JSONObject jsonTx = new JSONObject();
-                    populateJsonTx(jsonTx, txs[i]);
-                    jsonTxs.put(jsonTx);
+    private void addressTransactions(final String address, final int count, final CallbackContext callbackContext) {
+        executor.execute(new Runnable() {
+            @Override public void run() {
+                try {
+                    // initialize txs with preallocated tx objects
+                    Tx[] txs = new Tx[count];
+                    for (int i = 0; i < count; i++)
+                        txs[i] = new Tx();
+                    // call into jni
+                    Log.d(TAG, String.format("calling address_transactions with count: %d", count));
+                    IntResult result = zap_jni.address_transactions(address, txs, count);
+                    if (result.Success) {
+                        JSONArray jsonTxs = new JSONArray();
+                        for (int i = 0; i < (int)result.Value; i++) {
+                            JSONObject jsonTx = new JSONObject();
+                            populateJsonTx(jsonTx, txs[i]);
+                            jsonTxs.put(jsonTx);
+                        }
+                        Log.d(TAG, String.format("jsonTxs length: %d", jsonTxs.length()));
+                        callbackContext.success(jsonTxs);
+                    }
+                    else
+                    {
+                        Log.e(TAG, "addressTransactions failed");
+                        error(callbackContext);
+                    }
                 }
-                Log.d(TAG, String.format("jsonTxs length: %d", jsonTxs.length()));
-                callbackContext.success(jsonTxs);
+                catch (Exception e) {
+                    Log.e(TAG, "exception", e);
+                    callbackContext.error(e.getMessage());
+                }
             }
-            else
-            {
-                Log.e(TAG, "addressTransactions failed");
-                error(callbackContext);
-            }
-        }
-        catch (Exception e) {
-            Log.e(TAG, "exception", e);
-            callbackContext.error(e.getMessage());
-        }
+        });
     }
 
-    private void transactionFee(CallbackContext callbackContext) {
-        try {
-            // call into jni
-            Log.d(TAG, String.format("calling transaction_fee"));
-            IntResult result = zap_jni.transaction_fee();
-            if (result.Success) {
-                callbackContext.success(Long.toString(result.Value));
+    private void transactionFee(final CallbackContext callbackContext) {
+        executor.execute(new Runnable() {
+            @Override public void run() {
+                try {
+                    // call into jni
+                    Log.d(TAG, String.format("calling transaction_fee"));
+                    IntResult result = zap_jni.transaction_fee();
+                    if (result.Success) {
+                        callbackContext.success(Long.toString(result.Value));
+                    }
+                    else
+                    {
+                        Log.e(TAG, "transactionFee failed");
+                        error(callbackContext);
+                    }
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "exception", e);
+                    callbackContext.error(e.getMessage());
+                }
             }
-            else
-            {
-                Log.e(TAG, "transactionFee failed");
-                error(callbackContext);
-            }
-        }
-        catch (Exception e) {
-            Log.e(TAG, "exception", e);
-            callbackContext.error(e.getMessage());
-        }
+        });
     }
 
     private void transactionCreate(String seed, String recipient, long amount, long fee, String attachment, CallbackContext callbackContext) {
@@ -333,29 +352,33 @@ public class zap extends CordovaPlugin {
         }
     }
 
-    private void transactionBroadcast(JSONObject spendTx, CallbackContext callbackContext) {
-        try {
-            // call into jni
-            String data = spendTx.getString("data");
-            String signature = spendTx.getString("signature");
-            SpendTx spendTxJ = new SpendTx(false,
-                    Base64.decode(data, Base64.DEFAULT),
-                    Base64.decode(signature, Base64.DEFAULT));
-            Tx txJ = new Tx();
-            Log.d(TAG, String.format("calling transaction_broadcast data %s, signature %s", data, signature));
-            int result = zap_jni.transaction_broadcast(spendTxJ, txJ);
-            if (result != 0) {
-                JSONObject jsonTx = new JSONObject();
-                populateJsonTx(jsonTx, txJ);
-                callbackContext.success(jsonTx);
+    private void transactionBroadcast(final JSONObject spendTx, final CallbackContext callbackContext) {
+        executor.execute(new Runnable() {
+            @Override public void run() {
+                try {
+                    // call into jni
+                    String data = spendTx.getString("data");
+                    String signature = spendTx.getString("signature");
+                    SpendTx spendTxJ = new SpendTx(false,
+                            Base64.decode(data, Base64.DEFAULT),
+                            Base64.decode(signature, Base64.DEFAULT));
+                    Tx txJ = new Tx();
+                    Log.d(TAG, String.format("calling transaction_broadcast data %s, signature %s", data, signature));
+                    int result = zap_jni.transaction_broadcast(spendTxJ, txJ);
+                    if (result != 0) {
+                        JSONObject jsonTx = new JSONObject();
+                        populateJsonTx(jsonTx, txJ);
+                        callbackContext.success(jsonTx);
+                    }
+                    else
+                        error(callbackContext);
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "exception", e);
+                    callbackContext.error(e.getMessage());
+                }
             }
-            else
-                error(callbackContext);
-        }
-        catch (Exception e) {
-            Log.e(TAG, "exception", e);
-            callbackContext.error(e.getMessage());
-        }
+        });
     }
 
     private void populateJsonPaymentReq(JSONObject jsonReq, WavesPaymentRequest req) throws JSONException {

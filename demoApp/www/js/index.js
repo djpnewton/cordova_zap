@@ -185,12 +185,15 @@ var app = {
             cordova.plugins.zap.transactionFee(function(fee) {
                 cordova.plugins.zap.transactionCreate(seed, address, amount, fee, attachment, function(tx) {
                     self.addSection("created tx: " + tx.data + " - " + tx.signature);
+                    self.showSpinner();
                     cordova.plugins.zap.transactionBroadcast(tx, function(result) {
                         var str = "broadcast tx: " + self.stringifyAndPre(result);
                         self.addSection(str);
+                        self.hideSpinner();
                     },
                     function(err) {
                         self.addSection("broadcast tx error: " + self.stringifyAndPre(err));
+                        self.hideSpinner();
                     });
                 },
                 function(err) {
