@@ -182,10 +182,10 @@ var app = {
             var address = document.getElementById("address").value;
             var amount = parseInt(document.getElementById("amount").value);
             var attachment = document.getElementById("attachment").value;
+            self.showSpinner();
             cordova.plugins.zap.transactionFee(function(fee) {
                 cordova.plugins.zap.transactionCreate(seed, address, amount, fee, attachment, function(tx) {
                     self.addSection("created tx: " + tx.data + " - " + tx.signature);
-                    self.showSpinner();
                     cordova.plugins.zap.transactionBroadcast(tx, function(result) {
                         var str = "broadcast tx: " + self.stringifyAndPre(result);
                         self.addSection(str);
@@ -198,10 +198,12 @@ var app = {
                 },
                 function(err) {
                     self.addSection("create tx: " + err);
+                    self.hideSpinner();
                 });
             },
             function(err) {
                 self.addSection("fee: " + err);
+                self.hideSpinner();
             });
         };
 

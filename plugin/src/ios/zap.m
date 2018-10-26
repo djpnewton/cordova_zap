@@ -11,6 +11,8 @@
 + (NSDictionary*)txDict:(struct tx_t)tx;
 + (CDVPluginResult*)error;
 
+- (void)pluginInitialize;
+
 - (void)version:(CDVInvokedUrlCommand*)command;
 - (void)nodeGet:(CDVInvokedUrlCommand*)command;
 - (void)nodeSet:(CDVInvokedUrlCommand*)command;
@@ -30,6 +32,9 @@
 @end
 
 @implementation zap
+{
+    dispatch_queue_t network_queue;
+}
 
 + (NSDictionary*)txDict:(struct tx_t)tx
 {
@@ -57,6 +62,12 @@
                          @"message" : [NSString stringWithUTF8String:c_msg],
                         };
     return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:err];
+}
+
+- (void)pluginInitialize
+{
+    [super pluginInitialize];
+    network_queue = dispatch_queue_create("network requests", NULL);
 }
 
 - (void)version:(CDVInvokedUrlCommand*)command
@@ -209,8 +220,6 @@
 
 - (void)addressBalance:(CDVInvokedUrlCommand*)command
 {
-    //TODO: use a single dispatch queue created in object constructor
-    dispatch_queue_t network_queue = dispatch_queue_create("network requests", NULL);
     dispatch_async(network_queue, ^{ 
 
         CDVPluginResult* pluginResult = nil;
@@ -234,7 +243,6 @@
 
 - (void)addressTransactions:(CDVInvokedUrlCommand*)command
 {
-    dispatch_queue_t network_queue = dispatch_queue_create("network requests", NULL);
     dispatch_async(network_queue, ^{ 
 
         CDVPluginResult* pluginResult = nil;
@@ -271,7 +279,6 @@
 
 - (void)transactionFee:(CDVInvokedUrlCommand*)command
 {
-    dispatch_queue_t network_queue = dispatch_queue_create("network requests", NULL);
     dispatch_async(network_queue, ^{
 
         CDVPluginResult* pluginResult = nil;
@@ -326,7 +333,6 @@
 
 - (void)transactionBroadcast:(CDVInvokedUrlCommand*)command
 {
-    dispatch_queue_t network_queue = dispatch_queue_create("network requests", NULL);
     dispatch_async(network_queue, ^{
         
         CDVPluginResult* pluginResult = nil;
