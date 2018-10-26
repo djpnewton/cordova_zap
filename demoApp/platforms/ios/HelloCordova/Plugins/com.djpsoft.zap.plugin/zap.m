@@ -209,53 +209,65 @@
 
 - (void)addressBalance:(CDVInvokedUrlCommand*)command
 {
-    CDVPluginResult* pluginResult = nil;
+    dispatch_queue_t network_queue = dispatch_queue_create(“network requests”, NULL);
+    dispatch_async(network_queue, ^{ 
 
-    NSString* address = [command.arguments objectAtIndex:0];
+        CDVPluginResult* pluginResult = nil;
 
-    if (address != nil && [address length] > 0) {
-        const char *c_address = [address cStringUsingEncoding:NSUTF8StringEncoding];
-        struct int_result_t result = lzap_address_balance(c_address);
-        if (result.success)
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:result.value];
-        else
-            pluginResult = [zap error];
-    } else
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        NSString* address = [command.arguments objectAtIndex:0];
 
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        if (address != nil && [address length] > 0) {
+            const char *c_address = [address cStringUsingEncoding:NSUTF8StringEncoding];
+            struct int_result_t result = lzap_address_balance(c_address);
+            if (result.success)
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:result.value];
+            else
+                pluginResult = [zap error];
+        } else
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
+    });
+    dispatch_release(network_queue);
 }
 
 - (void)addressTransactions:(CDVInvokedUrlCommand*)command
 {
-    CDVPluginResult* pluginResult = nil;
+    dispatch_queue_t network_queue = dispatch_queue_create(“network requests”, NULL);
+    dispatch_async(network_queue, ^{ 
 
-    NSString *address = [command.arguments objectAtIndex:0];
-    NSNumber *limit = [command.arguments objectAtIndex:1];
+        CDVPluginResult* pluginResult = nil;
 
-    if (address != nil && [address length] > 0) {
-        const char *c_address = [address cStringUsingEncoding:NSUTF8StringEncoding];
-        NSMutableData* data = [NSMutableData dataWithLength:sizeof(struct tx_t) * limit.intValue];
-        struct tx_t *txs = [data mutableBytes];
-        if (!txs)
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
-        else {
-            struct int_result_t result = lzap_address_transactions(c_address, txs, limit.intValue);
-            if (result.success) {
-                NSMutableArray *tx_array = [NSMutableArray array];
-                for (int i = 0; i < result.value; i++) {
-                    NSDictionary *tx = [zap txDict:txs[i]];
-                    [tx_array addObject:tx];
+        NSString *address = [command.arguments objectAtIndex:0];
+        NSNumber *limit = [command.arguments objectAtIndex:1];
+
+        if (address != nil && [address length] > 0) {
+            const char *c_address = [address cStringUsingEncoding:NSUTF8StringEncoding];
+            NSMutableData* data = [NSMutableData dataWithLength:sizeof(struct tx_t) * limit.intValue];
+            struct tx_t *txs = [data mutableBytes];
+            if (!txs)
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+            else {
+                struct int_result_t result = lzap_address_transactions(c_address, txs, limit.intValue);
+                if (result.success) {
+                    NSMutableArray *tx_array = [NSMutableArray array];
+                    for (int i = 0; i < result.value; i++) {
+                        NSDictionary *tx = [zap txDict:txs[i]];
+                        [tx_array addObject:tx];
+                    }
+                    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:tx_array];
                 }
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:tx_array];
+                else
+                    pluginResult = [zap error];
             }
-            else
-                pluginResult = [zap error];
-        }
-    } else
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        } else
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
 
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
+    });
+    dispatch_release(network_queue);
 }
 
 - (void)transactionFee:(CDVInvokedUrlCommand*)command
