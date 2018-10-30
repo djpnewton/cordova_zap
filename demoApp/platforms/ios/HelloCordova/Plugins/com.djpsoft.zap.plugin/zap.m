@@ -11,6 +11,8 @@
 + (NSDictionary*)txDict:(struct tx_t)tx;
 + (CDVPluginResult*)error;
 
+- (void)pluginInitialize;
+
 - (void)version:(CDVInvokedUrlCommand*)command;
 - (void)nodeGet:(CDVInvokedUrlCommand*)command;
 - (void)nodeSet:(CDVInvokedUrlCommand*)command;
@@ -30,6 +32,9 @@
 @end
 
 @implementation zap
+{
+    dispatch_queue_t network_queue;
+}
 
 + (NSDictionary*)txDict:(struct tx_t)tx
 {
@@ -57,6 +62,12 @@
                          @"message" : [NSString stringWithUTF8String:c_msg],
                         };
     return [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:err];
+}
+
+- (void)pluginInitialize
+{
+    [super pluginInitialize];
+    network_queue = dispatch_queue_create("network requests", NULL);
 }
 
 - (void)version:(CDVInvokedUrlCommand*)command
@@ -209,7 +220,6 @@
 
 - (void)addressBalance:(CDVInvokedUrlCommand*)command
 {
-    dispatch_queue_t network_queue = dispatch_queue_create(“network requests”, NULL);
     dispatch_async(network_queue, ^{ 
 
         CDVPluginResult* pluginResult = nil;
@@ -229,12 +239,10 @@
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 
     });
-    dispatch_release(network_queue);
 }
 
 - (void)addressTransactions:(CDVInvokedUrlCommand*)command
 {
-    dispatch_queue_t network_queue = dispatch_queue_create(“network requests”, NULL);
     dispatch_async(network_queue, ^{ 
 
         CDVPluginResult* pluginResult = nil;
@@ -267,20 +275,23 @@
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 
     });
-    dispatch_release(network_queue);
 }
 
 - (void)transactionFee:(CDVInvokedUrlCommand*)command
 {
-    CDVPluginResult* pluginResult = nil;
+    dispatch_async(network_queue, ^{
 
-    struct int_result_t result = lzap_transaction_fee();
-    if (result.success)
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:result.value];
-    else
-        pluginResult = [zap error];
+        CDVPluginResult* pluginResult = nil;
 
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        struct int_result_t result = lzap_transaction_fee();
+        if (result.success)
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:result.value];
+        else
+            pluginResult = [zap error];
+
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
+    });
 }
 
 - (void)transactionCreate:(CDVInvokedUrlCommand*)command
@@ -322,34 +333,38 @@
 
 - (void)transactionBroadcast:(CDVInvokedUrlCommand*)command
 {
-    CDVPluginResult* pluginResult = nil;
+    dispatch_async(network_queue, ^{
+        
+        CDVPluginResult* pluginResult = nil;
 
-    NSDictionary *spendTx = [command.arguments objectAtIndex:0];
-    NSString *data = spendTx[@"data"];
-    NSString *signature = spendTx[@"signature"];
+        NSDictionary *spendTx = [command.arguments objectAtIndex:0];
+        NSString *data = spendTx[@"data"];
+        NSString *signature = spendTx[@"signature"];
 
-    if (data != nil && [data length] > 0 &&
-        signature != nil && [signature length] > 0) {
-        NSData *decodedData = [[NSData alloc] initWithBase64EncodedString:data options:0];
-        NSData *decodedSignature = [[NSData alloc] initWithBase64EncodedString:signature options:0];
-        struct spend_tx_t c_spend_tx = {};
-        if (decodedData.length <= sizeof(c_spend_tx.data)) {
-            memcpy(c_spend_tx.data, [decodedData bytes], decodedData.length);
-            c_spend_tx.data_size = decodedData.length;
-        }
-        if (decodedSignature.length == sizeof(c_spend_tx.signature))
-            memcpy(c_spend_tx.signature, [decodedSignature bytes], decodedSignature.length);
-        struct tx_t broadcast_tx;
-        int result = lzap_transaction_broadcast(c_spend_tx, &broadcast_tx);
-        if (result) {
-            NSDictionary *tx = [zap txDict:broadcast_tx];
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:tx];
+        if (data != nil && [data length] > 0 &&
+            signature != nil && [signature length] > 0) {
+            NSData *decodedData = [[NSData alloc] initWithBase64EncodedString:data options:0];
+            NSData *decodedSignature = [[NSData alloc] initWithBase64EncodedString:signature options:0];
+            struct spend_tx_t c_spend_tx = {};
+            if (decodedData.length <= sizeof(c_spend_tx.data)) {
+                memcpy(c_spend_tx.data, [decodedData bytes], decodedData.length);
+                c_spend_tx.data_size = decodedData.length;
+            }
+            if (decodedSignature.length == sizeof(c_spend_tx.signature))
+                memcpy(c_spend_tx.signature, [decodedSignature bytes], decodedSignature.length);
+            struct tx_t broadcast_tx;
+            int result = lzap_transaction_broadcast(c_spend_tx, &broadcast_tx);
+            if (result) {
+                NSDictionary *tx = [zap txDict:broadcast_tx];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:tx];
+            } else
+                pluginResult = [zap error];
         } else
-            pluginResult = [zap error];
-    } else
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
 
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        
+    });
 }
 
 - (void)uriParse:(CDVInvokedUrlCommand*)command
