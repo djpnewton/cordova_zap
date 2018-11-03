@@ -27,11 +27,12 @@ if [ "$build_type" == "android" ]; then
         export PATH="$PATH:$ANDROID_SDK/tools:$ANDROID_SDK/platform-tools:$ANDROID_NDK"
     fi
 
-    echo :: build libzap.so
-    (cd libzap/builds; ./cmake_lib_android.sh; cd android; make)
+    echo :: build libzap.so *all ABIs*
+    rm -r libzap/builds/ndk_build/*
+    (cd libzap/builds; ./build_android_abis.sh)
 
     echo :: copy libzap.so to cordova plugin
-    cp libzap/builds/ndk_build/armeabi-v7a/libzap.so plugin/src/android/libs/armeabi-v7a/libzap.so
+    cp -r libzap/builds/ndk_build/* plugin/src/android/libs/
 
     echo :: copy libzap java files to cordova plugin
     cp libzap/src/*.java plugin/src/android/
@@ -41,7 +42,8 @@ if [ "$build_type" == "android" ]; then
     (cd demoApp; cordova run android)
 elif [ "$build_type" == "ios" ]; then
     # do ios stuff
-    echo :: build libzap.a
+    echo :: build libzap.a *all ABIs*
+    rm -r libzap/builds/xcode_build/*
     (cd libzap/builds; ./cmake_lib_ios.sh $sim; cd ios; make;)
 
     echo :: combine libs
