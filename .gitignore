@@ -3,6 +3,7 @@
 *.swo
 .DS_Store
 
+node_modules/
 demoApp/node_modules/
 demoApp/platforms/android/CordovaLib/build
 demoApp/platforms/android/.gradle

@@ -84,7 +84,8 @@ public class zap extends CordovaPlugin {
         if (action.equals("addressTransactions")) {
             String address = args.getString(0);
             int count = args.getInt(1);
-            this.addressTransactions(address, count, callbackContext);
+            String after = args.getString(2);
+            this.addressTransactions(address, count, after, callbackContext);
             return true;
         }
         if (action.equals("transactionFee")) {
@@ -270,7 +271,7 @@ public class zap extends CordovaPlugin {
         jsonTx.put("timestamp", tx.Timestamp);
     }
 
-    private void addressTransactions(final String address, final int count, final CallbackContext callbackContext) {
+    private void addressTransactions(final String address, final int count, final String after, final CallbackContext callbackContext) {
         executor.execute(new Runnable() {
             @Override public void run() {
                 try {
@@ -279,8 +280,8 @@ public class zap extends CordovaPlugin {
                     for (int i = 0; i < count; i++)
                         txs[i] = new Tx();
                     // call into jni
-                    Log.d(TAG, String.format("calling address_transactions with count: %d", count));
-                    IntResult result = zap_jni.address_transactions(address, txs, count);
+                    Log.d(TAG, String.format("calling address_transactions with count: %d, after: %s", count, after));
+                    IntResult result = zap_jni.address_transactions(address, txs, count, after);
                     if (result.Success) {
                         JSONArray jsonTxs = new JSONArray();
                         for (int i = 0; i < (int)result.Value; i++) {

@@ -249,6 +249,7 @@
 
         NSString *address = [command.arguments objectAtIndex:0];
         NSNumber *limit = [command.arguments objectAtIndex:1];
+        NSString *after = [command.arguments objectAtIndex:2];
 
         if (address != nil && [address length] > 0) {
             const char *c_address = [address cStringUsingEncoding:NSUTF8StringEncoding];
@@ -257,7 +258,12 @@
             if (!txs)
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
             else {
-                struct int_result_t result = lzap_address_transactions(c_address, txs, limit.intValue);
+                struct int_result_t result;
+                if (after != nil && [after length] > 0) {
+                    const char *c_after = [after cStringUsingEncoding:NSUTF8StringEncoding];
+                    result = lzap_address_transactions(c_address, txs, limit.intValue, c_after);
+                } else
+                    result = lzap_address_transactions(c_address, txs, limit.intValue);
                 if (result.success) {
                     NSMutableArray *tx_array = [NSMutableArray array];
                     for (int i = 0; i < result.value; i++) {

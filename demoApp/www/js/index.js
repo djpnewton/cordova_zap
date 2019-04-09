@@ -151,11 +151,27 @@ var app = {
             function(err) {
                 self.addSection("balance error: " + self.stringifyAndPre(err));
             });
-            cordova.plugins.zap.addressTransactions(address, 3, function(txs) {
+            var tx_count = 3;
+            cordova.plugins.zap.addressTransactions(address, tx_count, null, function(txs) {
                 self.addSection("<div id='txs'>transactions: " + txs.length + "</div>");
                 for (var i = 0; i < txs.length; i++) {
                     self.addSubSection(self.stringifyAndPre(txs[i]), "txs");
                     self.hideSpinner();
+                }
+                if (txs.length == tx_count)
+                {
+                    var after = txs[tx_count-1].id;
+                    cordova.plugins.zap.addressTransactions(address, tx_count, after, function(txs_after) {
+                        self.addSection("<div id='txs_after'>transactions after " + after + ": " + txs_after.length + "</div>");
+                        for (var i = 0; i < txs_after.length; i++) {
+                            self.addSubSection(self.stringifyAndPre(txs_after[i]), "txs_after");
+                            self.hideSpinner();
+                        }
+                    },
+                    function(err) {
+                        self.addSection("transactions after error: " + self.stringifyAndPre(err));
+                        self.hideSpinner();
+                    });
                 }
             },
             function(err) {
@@ -221,6 +237,14 @@ var app = {
                     },
                     function(err) {
                         self.addSection("uri parse error: " + err + self.stringifyAndPre(err));
+                        cordova.plugins.zap.addressCheck(contents, function(check) {
+                            self.addSection("addr: " + check);
+                            if (check)
+                                document.getElementById("address").value = contents;
+                        },
+                        function(err) {
+                            self.addSection("addr check error: " + self.stringifyAndPre(err));
+                        });
                     });
                 document.getElementById("app").setAttribute("style", "display:block");
                 QRScanner.destroy();
