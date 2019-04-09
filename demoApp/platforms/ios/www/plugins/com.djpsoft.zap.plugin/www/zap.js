@@ -47,8 +47,8 @@ exports.addressBalance = function (address, success, error) {
     exec(success, error, PLUGIN_NAME, 'addressBalance', [address]);
 };
 
-exports.addressTransactions = function (address, limit, success, error) {
-    exec(success, error, PLUGIN_NAME, 'addressTransactions', [address, limit]);
+exports.addressTransactions = function (address, limit, after, success, error) {
+    exec(success, error, PLUGIN_NAME, 'addressTransactions', [address, limit, after]);
 };
 
 exports.transactionFee = function (success, error) {
